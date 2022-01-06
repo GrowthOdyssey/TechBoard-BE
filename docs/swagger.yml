@@ -1,0 +1,35 @@
+openapi: 3.0.0
+
+info:
+  version: 1.0.0
+  title: TechBoard API
+
+servers:
+  # 仮
+  - url: http://localhost:8080/
+
+paths:
+  /health_check:
+    get:
+      tags:
+        - ヘルスチェック
+      summary: ヘルスチェック
+      description: APIサーバの稼働状況を確認する
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/healthCheck"
+
+components:
+  schemas:
+    healthCheck:
+      type: object
+      properties:
+        status:
+          type: string
+          format: varchar(100)
+          example: OK
+# 一旦仮です！！
