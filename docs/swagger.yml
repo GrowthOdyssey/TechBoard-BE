@@ -80,6 +80,37 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response500"
 
+  /v1/login:
+    post:
+      tags:
+        - User
+      summary: ユーザーログイン
+      description: ユーザーログインを行う。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/loginRequest"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/loginResponse"
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response422"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
+
 components:
   schemas:
     signupRequest:
@@ -106,6 +137,43 @@ components:
     signupResponse:
       type: object
       description: ユーザー登録レスポンス
+      required:
+        - userId
+        - name
+        - createdAt
+      properties:
+        userId:
+          type: string
+          description: ユーザーID
+          example: userId
+        name:
+          type: string
+          description: ニックネーム
+          example: ニックネーム
+        createdAt:
+          type: string
+          description: 作成日時
+          example: "2022-01-01T00:00:00+09:00"
+
+    loginRequest:
+      type: object
+      description: ログインリクエスト
+      required:
+        - userId
+        - password
+      properties:
+        userId:
+          type: string
+          description: ユーザーID
+          example: userId
+        password:
+          type: string
+          description: パスワード
+          example: password
+
+    loginResponse:
+      type: object
+      description: ログインレスポンス
       required:
         - userId
         - name
