@@ -31,7 +31,23 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/healthCheckResponse"
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: ステータス
+                    example: OK
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: ステータス
+                    example: NG
 
   /v1/signup:
     post:
@@ -45,51 +61,118 @@ paths:
             schema:
               $ref: "#/components/schemas/signupRequest"
       responses:
-        200:
-          description: OK
+        201:
+          description: Created
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/signupResponse"
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response422"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
 
 components:
   schemas:
-    healthCheckResponse:
-      type: object
-      properties:
-        status:
-          type: string
-          format: varchar(100)
-          example: OK
-
     signupRequest:
       type: object
+      description: ユーザー登録リクエスト
+      required:
+        - userId
+        - password
+        - name
       properties:
         userId:
           type: string
-          format: varchar(100)
+          description: ユーザーID
           example: userId
         password:
           type: string
-          format: varchar(100)
+          description: パスワード
           example: password
         name:
           type: string
-          format: varchar(100)
+          description: ニックネーム
           example: ニックネーム
 
     signupResponse:
       type: object
+      description: ユーザー登録レスポンス
+      required:
+        - userId
+        - name
+        - createdAt
       properties:
         userId:
           type: string
-          format: varchar(100)
+          description: ユーザーID
           example: userId
-        password:
-          type: string
-          format: varchar(100)
-          example: password
         name:
           type: string
-          format: varchar(100)
+          description: ニックネーム
           example: ニックネーム
+        createdAt:
+          type: string
+          description: 作成日時
+          example: "2022-01-01T00:00:00+09:00"
+
+    Response400:
+      type: object
+      description: 400エラーレスポンス
+      properties:
+        message:
+          type: string
+          description: メッセージ
+          example: メッセージ
+
+    Response401:
+      type: object
+      description: 401エラーレスポンス
+      properties:
+        message:
+          type: string
+          description: メッセージ
+          example: メッセージ
+
+    Response404:
+      type: object
+      description: 404エラーレスポンス
+      properties:
+        message:
+          type: string
+          description: メッセージ
+          example: メッセージ
+
+    Response422:
+      type: object
+      description: 422エラーレスポンス
+      properties:
+        message:
+          type: string
+          description: メッセージ
+          example: メッセージ
+        errors:
+          type: object
+          description: エラー内容
+          properties:
+            propertyName:
+              type: string
+              description: プロパティ名
+              example: xxxxを入力してください。
+
+    Response500:
+      type: object
+      description: 500エラーレスポンス
+      properties:
+        message:
+          type: string
+          description: メッセージ
+          example: メッセージ
