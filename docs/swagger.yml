@@ -21,9 +21,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/healthCheck"
+                $ref: "#/components/schemas/healthCheckResponse"
 
-  /v1/user:
+  /v1/signup:
     post:
       tags:
         - ユーザー
