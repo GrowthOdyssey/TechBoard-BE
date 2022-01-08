@@ -23,13 +23,64 @@ paths:
               schema:
                 $ref: "#/components/schemas/healthCheck"
 
+  /v1/user:
+    post:
+      tags:
+        - ユーザー
+      summary: ユーザー登録
+      description: ユーザーを登録する
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/userPostRequest"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/userPostResponse"
+
 components:
   schemas:
-    healthCheck:
+    healthCheckResponse:
       type: object
       properties:
         status:
           type: string
           format: varchar(100)
           example: OK
+
+    userPostRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: varchar(100)
+          example: user_id
+        password:
+          type: string
+          format: varchar(100)
+          example: password
+        name:
+          type: string
+          format: varchar(100)
+          example: ニックネーム
+
+    userPostResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: varchar(100)
+          example: user_id
+        password:
+          type: string
+          format: varchar(100)
+          example: password
+        name:
+          type: string
+          format: varchar(100)
+          example: ニックネーム
 # 一旦仮です！！
