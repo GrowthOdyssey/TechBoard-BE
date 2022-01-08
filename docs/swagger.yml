@@ -4,17 +4,27 @@ info:
   version: 1.0.0
   title: TechBoard API
 
+tags:
+  - name: HealthCheck
+    description: ヘルスチェック
+  - name: User
+    description: ユーザー
+  - name: Board
+    description: 掲示板
+  - name: Article
+    description: 記事
+
 servers:
-  # 仮
-  - url: http://localhost:8080/
+  - url: http://localhost:8080
+    description: local server
 
 paths:
   /health_check:
     get:
       tags:
-        - ヘルスチェック
+        - HealthCheck
       summary: ヘルスチェック
-      description: APIサーバの稼働状況を確認する
+      description: APIサーバの稼働状況を確認する。
       responses:
         200:
           description: OK
@@ -26,21 +36,21 @@ paths:
   /v1/signup:
     post:
       tags:
-        - ユーザー
+        - User
       summary: ユーザー登録
-      description: ユーザーを登録する
+      description: ユーザーを登録する。
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/userPostRequest"
+              $ref: "#/components/schemas/signupRequest"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/userPostResponse"
+                $ref: "#/components/schemas/signupResponse"
 
 components:
   schemas:
@@ -52,13 +62,13 @@ components:
           format: varchar(100)
           example: OK
 
-    userPostRequest:
+    signupRequest:
       type: object
       properties:
         userId:
           type: string
           format: varchar(100)
-          example: user_id
+          example: userId
         password:
           type: string
           format: varchar(100)
@@ -68,13 +78,13 @@ components:
           format: varchar(100)
           example: ニックネーム
 
-    userPostResponse:
+    signupResponse:
       type: object
       properties:
         userId:
           type: string
           format: varchar(100)
-          example: user_id
+          example: userId
         password:
           type: string
           format: varchar(100)
@@ -83,4 +93,3 @@ components:
           type: string
           format: varchar(100)
           example: ニックネーム
-# 一旦仮です！！
