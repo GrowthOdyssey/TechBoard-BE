@@ -110,6 +110,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Response500"
+  /v1/article:
+    post:
+      tags:
+        - 記事
+      summary: 記事一覧取得
+      description: 記事一覧を取得する
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/articlePostRequest"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/articlePostResponse"
 
 components:
   schemas:
@@ -191,6 +209,34 @@ components:
           type: string
           description: 作成日時
           example: "2022-01-01T00:00:00+09:00"
+
+    articlePostRequest:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: integer(100)
+          example: 1
+        perPage:
+          type: integer
+          format: integer(100)
+          example: 10
+
+    articlePostResponse:
+      type: object
+      properties:
+        articleId:
+          type: integer
+          format: integer(100)
+          example: 1
+        articleName:
+          type: string
+          format: varchar(100)
+          example: artice_name
+        createdAt:
+          type: string
+          format: date-time
+          example: "2017-01-01 12:00:00"
 
     Response400:
       type: object
