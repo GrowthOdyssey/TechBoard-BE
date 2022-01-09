@@ -237,6 +237,22 @@ components:
           type: string
           format: date-time
           example: "2017-01-01 12:00:00"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2017-01-01 12:00:00"
+        pageNumber:
+          type: integer
+          format: integer(100)
+          example: 1
+        perPage:
+          type: integer
+          format: integer(100)
+          example: 10
+        totalNumber:
+          type: integer
+          format: integer(100)
+          example: 10
 
     Response400:
       type: object
