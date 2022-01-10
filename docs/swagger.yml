@@ -223,6 +223,45 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response500"
 
+  /v1/threads/{threadId}/comments:
+    post:
+      tags:
+        - Board
+      summary: コメント作成
+      description: コメントを作成（投稿）する。
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: スレッドID
+            example: "1"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/threadsCommentsPostRequest"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/threadsCommentsPostResponse"
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response422"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
+
 components:
   schemas:
     signupRequest:
@@ -479,6 +518,68 @@ components:
         updatedAt:
           type: string
           description: 更新日時
+          example: "2022-01-01T00:00:00+09:00"
+
+    threadsCommentsPostRequest:
+      type: object
+      description: コメント作成リクエスト
+      required:
+        - commentTitle
+      properties:
+        userId:
+          type: string
+          description: ユーザーID（コメント投稿者）
+          example: "1"
+        sessionId:
+          type: string
+          description: セッションID（コメント投稿者）
+          example: "1111"
+        commentTitle:
+          type: string
+          description: コメントタイトル
+          example: コメント
+
+    threadsCommentsPostResponse:
+      type: object
+      description: コメント作成レスポンス
+      required:
+        - commentId
+        - commentTitle
+        - threadId
+        - threadTitle
+        - createdAt
+      properties:
+        commentId:
+          type: string
+          description: コメントID
+          example: "1"
+        commentTitle:
+          type: string
+          description: コメントタイトル
+          example: コメント
+        threadId:
+          type: string
+          description: スレッドID
+          example: "1"
+        threadTitle:
+          type: string
+          description: スレッドタイトル
+          example: スレッドタイトル
+        userId:
+          type: string
+          description: ユーザーID（コメント投稿者）
+          example: "1"
+        userName:
+          type: string
+          description: ニックネーム（コメント投稿者）
+          example: ニックネーム
+        sessionId:
+          type: string
+          description: セッションID（コメント投稿者）
+          example: "1111"
+        createdAt:
+          type: string
+          description: 作成日時
           example: "2022-01-01T00:00:00+09:00"
 
     Response400:
