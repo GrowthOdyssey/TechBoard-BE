@@ -17,6 +17,8 @@ tags:
 servers:
   - url: http://localhost:8080
     description: local server
+  - url: http://127.0.0.1:4010
+    description: mock server
 
 paths:
   /health_check:
