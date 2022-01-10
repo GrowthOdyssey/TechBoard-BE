@@ -159,6 +159,36 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response500"
 
+    post:
+      tags:
+        - Board
+      summary: スレッド作成
+      description: スレッドを作成する。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/threadsPostRequest"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/threadsPostResponse"
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response422"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
+
   /v1/threads/{threadId}:
     get:
       tags:
@@ -331,6 +361,53 @@ components:
               type: integer
               description: 総件数
               example: 99
+
+    threadsPostRequest:
+      type: object
+      description: スレッド作成リクエスト
+      required:
+        - threadTitle
+        - categoryId
+      properties:
+        threadTitle:
+          type: string
+          description: スレッドタイトル
+          example: スレッドタイトル
+        categoryId:
+          type: string
+          description: カテゴリID
+          example: "1"
+
+    threadsPostResponse:
+      type: object
+      description: スレッド作成レスポンス
+      required:
+        - threadId
+        - threadTitle
+        - categoryId
+        - createdAt
+        - updatedAt
+      properties:
+        threadId:
+          type: string
+          description: スレッドID
+          example: "1"
+        threadTitle:
+          type: string
+          description: スレッドタイトル
+          example: スレッドタイトル
+        categoryId:
+          type: string
+          description: カテゴリID
+          example: "1"
+        createdAt:
+          type: string
+          description: 作成日時
+          example: "2022-01-01T00:00:00+09:00"
+        updatedAt:
+          type: string
+          description: 更新日時
+          example: "2022-01-01T00:00:00+09:00"
 
     threadsGetResponse:
       type: object
