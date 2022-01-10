@@ -111,6 +111,54 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response500"
 
+  /v1/threads:
+    get:
+      tags:
+        - Board
+      summary: スレッド一覧取得
+      description: スレッドの一覧を取得する。
+      parameters:
+        - name: categoryId
+          in: query
+          required: false
+          schema:
+            type: string
+            description: カテゴリID
+            example: "1"
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            description: ページ番号
+            example: 1
+        - name: perPage
+          in: query
+          required: true
+          schema:
+            type: integer
+            description: 1ページあたりの件数
+            example: 20
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/threadsListGetResponse"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response400"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
+
 components:
   schemas:
     signupRequest:
@@ -191,6 +239,64 @@ components:
           type: string
           description: 作成日時
           example: "2022-01-01T00:00:00+09:00"
+
+    threadsListGetResponse:
+      type: object
+      description: スレッド一覧取得レスポンス
+      properties:
+        threads:
+          type: array
+          description: スレッド一覧
+          items:
+            type: object
+            description: スレッド
+            required:
+              - threadId
+              - threadTitle
+              - categoryId
+              - createdAt
+              - updatedAt
+            properties:
+              threadId:
+                type: string
+                description: スレッドID
+                example: "1"
+              threadTitle:
+                type: string
+                description: スレッドタイトル
+                example: スレッドタイトル
+              categoryId:
+                type: string
+                description: カテゴリID
+                example: "1"
+              createdAt:
+                type: string
+                description: 作成日時
+                example: "2022-01-01T00:00:00+09:00"
+              updatedAt:
+                type: string
+                description: 更新日時
+                example: "2022-01-01T00:00:00+09:00"
+        pagination:
+          type: object
+          description: ページネーション情報
+          required:
+            - page
+            - perPage
+            - total
+          properties:
+            page:
+              type: integer
+              description: ページ番号
+              example: 1
+            perPage:
+              type: integer
+              description: 1ページあたりの件数
+              example: 20
+            total:
+              type: integer
+              description: 総件数
+              example: 99
 
     Response400:
       type: object
