@@ -159,6 +159,40 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response500"
 
+  /v1/threads/{threadId}:
+    get:
+      tags:
+        - Board
+      summary: スレッド取得
+      description: スレッド1件の詳細情報を取得する。
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: スレッドID
+            example: "1"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/threadsGetResponse"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response400"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
+
 components:
   schemas:
     signupRequest:
@@ -167,7 +201,7 @@ components:
       required:
         - userId
         - password
-        - name
+        - userName
       properties:
         userId:
           type: string
@@ -177,7 +211,7 @@ components:
           type: string
           description: パスワード
           example: password
-        name:
+        userName:
           type: string
           description: ニックネーム
           example: ニックネーム
@@ -187,14 +221,14 @@ components:
       description: ユーザー登録レスポンス
       required:
         - userId
-        - name
+        - userName
         - createdAt
       properties:
         userId:
           type: string
           description: ユーザーID
           example: userId
-        name:
+        userName:
           type: string
           description: ニックネーム
           example: ニックネーム
@@ -224,14 +258,14 @@ components:
       description: ログインレスポンス
       required:
         - userId
-        - name
+        - userName
         - createdAt
       properties:
         userId:
           type: string
           description: ユーザーID
           example: userId
-        name:
+        userName:
           type: string
           description: ニックネーム
           example: ニックネーム
@@ -297,6 +331,78 @@ components:
               type: integer
               description: 総件数
               example: 99
+
+    threadsGetResponse:
+      type: object
+      description: スレッド取得レスポンス
+      required:
+        - threadId
+        - threadTitle
+        - categoryId
+        - commentsCount
+        - comments
+        - createdAt
+        - updatedAt
+      properties:
+        threadId:
+          type: string
+          description: スレッドID
+          example: "1"
+        threadTitle:
+          type: string
+          description: スレッドタイトル
+          example: スレッドタイトル
+        categoryId:
+          type: string
+          description: カテゴリID
+          example: "1"
+        commentsCount:
+          type: integer
+          description: コメント件数
+          example: 100
+        comments:
+          type: array
+          description: コメント一覧
+          items:
+            type: object
+            description: コメント
+            required:
+              - commentId
+              - commentTitle
+              - createdAt
+            properties:
+              commentId:
+                type: string
+                description: コメントID
+                example: "1"
+              commentTitle:
+                type: string
+                description: コメントタイトル
+                example: コメント
+              userId:
+                type: string
+                description: ユーザーID（コメント投稿者）
+                example: "1"
+              userName:
+                type: string
+                description: ニックネーム（コメント投稿者）
+                example: ニックネーム
+              sessionId:
+                type: string
+                description: セッションID（コメント投稿者）
+                example: "1111"
+              createdAt:
+                type: string
+                description: 作成日時
+                example: "2022-01-01T00:00:00+09:00"
+        createdAt:
+          type: string
+          description: 作成日時
+          example: "2022-01-01T00:00:00+09:00"
+        updatedAt:
+          type: string
+          description: 更新日時
+          example: "2022-01-01T00:00:00+09:00"
 
     Response400:
       type: object
