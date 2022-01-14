@@ -246,6 +246,38 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Response500"
+
+  /v1/articles/{articleId}/delete:
+    post:
+      tags:
+        - Article
+      summary: 記事削除
+      description: 記事を削除する。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/articlesDeletePostRequest"
+      responses:
+        201:
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/articlesDeletePostResponse"
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response422"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
+
 components:
   schemas:
     signupRequest:
@@ -507,6 +539,17 @@ components:
           type: string
           description: ニックネーム
           example: ニックネーム
+
+    articlesDeletePostRequest:
+      type: object
+      properties:
+        articleId:
+          type: string
+          description: 記事ID
+          example: "1"
+
+    articlesDeletePostResponse:
+      type: object
 
     Response400:
       type: object
