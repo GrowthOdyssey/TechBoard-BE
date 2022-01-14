@@ -182,13 +182,39 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response500"
 
+  /v1/articles/{articleId}:
+    get:
+      tags:
+        - Article
+      summary: 記事閲覧
+      description: 記事1件の詳細情報を取得する。
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: 記事ID
+            example: "1"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/articlePostResponse"
+                $ref: "#/components/schemas/articlesGetResponse"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response400"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
 
 components:
   schemas:
@@ -377,6 +403,28 @@ components:
           type: string
           description: ニックネーム
           example: ニックネーム
+
+    articlesGetResponse:
+      type: object
+      description: 記事取得レスポンス
+      required:
+        - articleId
+        - articleTitle
+        - content
+      properties:
+        articleId:
+          type: string
+          description: 記事ID
+          example: "1"
+        articleTitle:
+          type: string
+          description: 記事タイトル
+          format: varchar(100)
+          example: 記事タイトル
+        content:
+          type: string
+          description: コンテンツ
+          example: コンテンツ
       type: object
       properties:
         pageNumber:
