@@ -216,6 +216,36 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response500"
 
+  /v1/articles/{articleId}/edit:
+    post:
+      tags:
+        - Article
+      summary: 記事編集
+      description: 記事を編集する。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/articlesEditPostRequest"
+      responses:
+        201:
+          description: Edited
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/articlesEditPostResponse"
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response422"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
 components:
   schemas:
     signupRequest:
@@ -425,48 +455,58 @@ components:
           type: string
           description: コンテンツ
           example: コンテンツ
+
+    articlesEditPostRequest:
       type: object
       properties:
-        pageNumber:
-          type: integer
-          format: integer(100)
-          example: 1
-        perPage:
-          type: integer
-          format: integer(100)
-          example: 10
+        articleTitle:
+          type: string
+          description: 記事タイトル
+          format: varchar(100)
+          example: 記事タイトル
+        content:
+          type: string
+          description: コンテンツ
+          example: コンテンツ
+        articleId:
+          type: string
+          description: 記事ID
+          example: "1"
 
-    articlePostResponse:
+    articlesEditPostResponse:
       type: object
       properties:
         articleId:
-          type: integer
-          format: integer(100)
-          example: 1
-        articleName:
           type: string
+          description: 記事ID
+          example: "1"
+        articleTitle:
+          type: string
+          description: 記事タイトル
           format: varchar(100)
-          example: artice_name
+          example: 記事タイトル
+        content:
+          type: string
+          description: コンテンツ
+          example: コンテンツ
         createdAt:
           type: string
+          description: 作成日時
           format: date-time
-          example: "2017-01-01 12:00:00"
+          example: "2022-01-01T00:00:00+09:00"
         updatedAt:
           type: string
+          description: 更新日時
           format: date-time
-          example: "2017-01-01 12:00:00"
-        pageNumber:
-          type: integer
-          format: integer(100)
-          example: 1
-        perPage:
-          type: integer
-          format: integer(100)
-          example: 10
-        totalNumber:
-          type: integer
-          format: integer(100)
-          example: 10
+          example: "2022-01-01T00:00:00+09:00"
+        userId:
+          type: string
+          description: ユーザーID
+          example: userId
+        userName:
+          type: string
+          description: ニックネーム
+          example: ニックネーム
 
     Response400:
       type: object
