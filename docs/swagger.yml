@@ -188,7 +188,7 @@ paths:
     get:
       tags:
         - Article
-      summary: 記事閲覧
+      summary: 記事取得
       description: 記事1件の詳細情報を取得する。
       parameters:
         - name: articleId
@@ -218,24 +218,23 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response500"
 
-  /v1/articles/{articleId}/edit:
-    post:
+    put:
       tags:
         - Article
-      summary: 記事編集
-      description: 記事を編集する。
+      summary: 記事更新
+      description: 記事を更新する。
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/articlesEditPostRequest"
+              $ref: "#/components/schemas/articlesPutRequest"
       responses:
-        201:
-          description: Edited
+        200:
+          description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/articlesEditPostResponse"
+                $ref: "#/components/schemas/articlesPutResponse"
         422:
           description: Unprocessable Entity
           content:
@@ -249,8 +248,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response500"
 
-  /v1/articles/{articleId}/delete:
-    post:
+    delete:
       tags:
         - Article
       summary: 記事削除
@@ -259,14 +257,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/articlesDeletePostRequest"
+              $ref: "#/components/schemas/articlesDeleteRequest"
       responses:
-        201:
-          description: Deleted
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/articlesDeletePostResponse"
+        204:
+          description: No Content
         422:
           description: Unprocessable Entity
           content:
@@ -516,7 +510,7 @@ components:
       type: object
       description: 記事一覧取得レスポンス
       properties:
-        threads:
+        articles:
           type: array
           description: 記事一覧
           items:
@@ -525,6 +519,8 @@ components:
             required:
               - articleId
               - articleTitle
+              - userId
+              - userName
               - createdAt
               - updatedAt
             properties:
@@ -536,10 +532,24 @@ components:
                 type: string
                 description: 記事名
                 example: 記事名
+              userId:
+                type: string
+                description: ユーザーID
+                example: userId
+              userName:
+                type: string
+                description: ニックネーム
+                example: ニックネーム
               createdAt:
                 type: string
                 description: 作成日時
                 format: date-time
+                example: "2022-01-01T00:00:00+09:00"
+              updatedAt:
+                type: string
+                description: 更新日時
+                format: date-time
+                example: "2022-01-01T00:00:00+09:00"
 
     threadsListGetResponse:
       type: object
@@ -602,6 +612,10 @@ components:
 
     articlesPostRequest:
       type: object
+      required:
+        - articleTitle
+        - content
+        - userId
       properties:
         articleTitle:
           type: string
@@ -619,6 +633,142 @@ components:
 
     articlesPostResponse:
       type: object
+      required:
+        - articleId
+        - articleTitle
+        - content
+        - userId
+        - userName
+        - createdAt
+        - updatedAt
+      properties:
+        articleId:
+          type: string
+          description: 記事ID
+          example: "1"
+        articleTitle:
+          type: string
+          description: 記事タイトル
+          format: varchar(100)
+          example: 記事タイトル
+        content:
+          type: string
+          description: コンテンツ
+          example: コンテンツ
+        userId:
+          type: string
+          description: ユーザーID
+          example: userId
+        userName:
+          type: string
+          description: ニックネーム
+          example: ニックネーム
+        createdAt:
+          type: string
+          description: 作成日時
+          format: date-time
+          example: "2022-01-01T00:00:00+09:00"
+        updatedAt:
+          type: string
+          description: 更新日時
+          format: date-time
+          example: "2022-01-01T00:00:00+09:00"
+
+    articlesGetResponse:
+      type: object
+      description: 記事取得レスポンス
+      required:
+        - articleId
+        - articleTitle
+        - content
+        - userId
+        - userName
+        - createdAt
+        - updatedAt
+      properties:
+        articleId:
+          type: string
+          description: 記事ID
+          example: "1"
+        articleTitle:
+          type: string
+          description: 記事タイトル
+          format: varchar(100)
+          example: 記事タイトル
+        content:
+          type: string
+          description: コンテンツ
+          example: コンテンツ
+        userId:
+          type: string
+          description: ユーザーID
+          example: userId
+        userName:
+          type: string
+          description: ニックネーム
+          example: ニックネーム
+        createdAt:
+          type: string
+          description: 作成日時
+          example: "2022-01-01T00:00:00+09:00"
+        updatedAt:
+          type: string
+          description: 更新日時
+          format: date-time
+          example: "2022-01-01T00:00:00+09:00"
+
+    articlesPutRequest:
+      type: object
+      required:
+        - articleId
+        - articleTitle
+        - content
+        - userId
+        - userName
+        - createdAt
+        - updatedAt
+      properties:
+        articleId:
+          type: string
+          description: 記事ID
+          example: "1"
+        articleTitle:
+          type: string
+          description: 記事タイトル
+          format: varchar(100)
+          example: 記事タイトル
+        content:
+          type: string
+          description: コンテンツ
+          example: コンテンツ
+        userId:
+          type: string
+          description: ユーザーID
+          example: userId
+        userName:
+          type: string
+          description: ニックネーム
+          example: ニックネーム
+        createdAt:
+          type: string
+          description: 作成日時
+          example: "2022-01-01T00:00:00+09:00"
+        updatedAt:
+          type: string
+          description: 更新日時
+          format: date-time
+          example: "2022-01-01T00:00:00+09:00"
+
+    articlesPutResponse:
+      type: object
+      required:
+        - articleId
+        - articleTitle
+        - content
+        - userId
+        - userName
+        - createdAt
+        - updatedAt
       properties:
         articleId:
           type: string
@@ -637,77 +787,7 @@ components:
           type: string
           description: 作成日時
           format: date-time
-          example: "2022-01-01T00:00:00+09:00"
         updatedAt:
-          type: string
-          description: 更新日時
-          format: date-time
-          example: "2022-01-01T00:00:00+09:00"
-        userId:
-          type: string
-          description: ユーザーID
-          example: userId
-        userName:
-          type: string
-          description: ニックネーム
-          example: ニックネーム
-
-    articlesGetResponse:
-      type: object
-      description: 記事取得レスポンス
-      required:
-        - articleId
-        - articleTitle
-        - content
-      properties:
-        articleId:
-          type: string
-          description: 記事ID
-          example: "1"
-        articleTitle:
-          type: string
-          description: 記事タイトル
-          format: varchar(100)
-          example: 記事タイトル
-        content:
-          type: string
-          description: コンテンツ
-          example: コンテンツ
-
-    articlesEditPostRequest:
-      type: object
-      properties:
-        articleTitle:
-          type: string
-          description: 記事タイトル
-          format: varchar(100)
-          example: 記事タイトル
-        content:
-          type: string
-          description: コンテンツ
-          example: コンテンツ
-        articleId:
-          type: string
-          description: 記事ID
-          example: "1"
-
-    articlesEditPostResponse:
-      type: object
-      properties:
-        articleId:
-          type: string
-          description: 記事ID
-          example: "1"
-        articleTitle:
-          type: string
-          description: 記事タイトル
-          format: varchar(100)
-          example: 記事タイトル
-        content:
-          type: string
-          description: コンテンツ
-          example: コンテンツ
-        createdAt:
           type: string
           description: 作成日時
           format: date-time
@@ -769,7 +849,7 @@ components:
           description: ニックネーム
           example: ニックネーム
 
-    articlesDeletePostRequest:
+    articlesDeleteRequest:
       type: object
       properties:
         articleId:
