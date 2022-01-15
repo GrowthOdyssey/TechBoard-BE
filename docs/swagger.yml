@@ -112,6 +112,170 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Response500"
+  
+  /v1/articles:
+    get:
+      tags:
+        - Article
+      summary: 記事一覧取得
+      description: 記事一覧を取得する
+      parameters:
+        - name: page
+          in: query
+          required: true
+          schema:
+            type: integer
+            description: ページ番号
+            example: 1
+        - name: perPage
+          in: query
+          required: true
+          schema:
+            type: integer
+            description: 1ページあたりの件数
+            example: 20
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/articlesListGetResponse"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response400"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
+
+    post:
+      tags:
+        - Article
+      summary: 記事作成
+      description: 記事を作成する。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/articlesPostRequest"
+      responses:
+        201:
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/articlesPostResponse"
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response422"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
+
+  /v1/articles/{articleId}:
+    get:
+      tags:
+        - Article
+      summary: 記事取得
+      description: 記事1件の詳細情報を取得する。
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: 記事ID
+            example: "1"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/articlesGetResponse"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response400"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
+
+    put:
+      tags:
+        - Article
+      summary: 記事更新
+      description: 記事を更新する。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/articlesPutRequest"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/articlesPutResponse"
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response422"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
+
+    delete:
+      tags:
+        - Article
+      summary: 記事削除
+      description: 記事を削除する。
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: 記事ID
+            example: "1"
+      responses:
+        204:
+          description: No Content
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response400"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
 
   /v1/threads:
     get:
@@ -345,6 +509,51 @@ components:
           description: 作成日時
           example: "2022-01-01T00:00:00+09:00"
 
+    articlesListGetResponse:
+      type: object
+      description: 記事一覧取得レスポンス
+      properties:
+        articles:
+          type: array
+          description: 記事一覧
+          items:
+            type: object
+            description: 記事
+            required:
+              - articleId
+              - articleTitle
+              - userId
+              - userName
+              - createdAt
+              - updatedAt
+            properties:
+              articleId:
+                type: string
+                description: 記事ID
+                example: "1"
+              articleTitle:
+                type: string
+                description: 記事名
+                example: 記事名
+              userId:
+                type: string
+                description: ユーザーID
+                example: userId
+              userName:
+                type: string
+                description: ニックネーム
+                example: ニックネーム
+              createdAt:
+                type: string
+                description: 作成日時
+                format: date-time
+                example: "2022-01-01T00:00:00+09:00"
+              updatedAt:
+                type: string
+                description: 更新日時
+                format: date-time
+                example: "2022-01-01T00:00:00+09:00"
+
     threadsListGetResponse:
       type: object
       description: スレッド一覧取得レスポンス
@@ -381,6 +590,7 @@ components:
               updatedAt:
                 type: string
                 description: 更新日時
+                format: date-time
                 example: "2022-01-01T00:00:00+09:00"
         pagination:
           type: object
@@ -402,6 +612,188 @@ components:
               type: integer
               description: 総件数
               example: 99
+
+    articlesPostRequest:
+      type: object
+      required:
+        - articleTitle
+        - content
+        - userId
+      properties:
+        articleTitle:
+          type: string
+          description: 記事タイトル
+          format: varchar(100)
+          example: 記事タイトル
+        content:
+          type: string
+          description: コンテンツ
+          example: コンテンツ
+        userId:
+          type: string
+          description: ユーザーID
+          example: userId
+
+    articlesPostResponse:
+      type: object
+      required:
+        - articleId
+        - articleTitle
+        - content
+        - userId
+        - userName
+        - createdAt
+        - updatedAt
+      properties:
+        articleId:
+          type: string
+          description: 記事ID
+          example: "1"
+        articleTitle:
+          type: string
+          description: 記事タイトル
+          format: varchar(100)
+          example: 記事タイトル
+        content:
+          type: string
+          description: コンテンツ
+          example: コンテンツ
+        userId:
+          type: string
+          description: ユーザーID
+          example: userId
+        userName:
+          type: string
+          description: ニックネーム
+          example: ニックネーム
+        createdAt:
+          type: string
+          description: 作成日時
+          format: date-time
+          example: "2022-01-01T00:00:00+09:00"
+        updatedAt:
+          type: string
+          description: 更新日時
+          format: date-time
+          example: "2022-01-01T00:00:00+09:00"
+
+    articlesGetResponse:
+      type: object
+      description: 記事取得レスポンス
+      required:
+        - articleId
+        - articleTitle
+        - content
+        - userId
+        - userName
+        - createdAt
+        - updatedAt
+      properties:
+        articleId:
+          type: string
+          description: 記事ID
+          example: "1"
+        articleTitle:
+          type: string
+          description: 記事タイトル
+          format: varchar(100)
+          example: 記事タイトル
+        content:
+          type: string
+          description: コンテンツ
+          example: コンテンツ
+        userId:
+          type: string
+          description: ユーザーID
+          example: userId
+        userName:
+          type: string
+          description: ニックネーム
+          example: ニックネーム
+        createdAt:
+          type: string
+          description: 作成日時
+          example: "2022-01-01T00:00:00+09:00"
+        updatedAt:
+          type: string
+          description: 更新日時
+          format: date-time
+          example: "2022-01-01T00:00:00+09:00"
+
+    articlesPutRequest:
+      type: object
+      required:
+        - articleId
+        - articleTitle
+        - content
+        - userId
+        - userName
+        - createdAt
+        - updatedAt
+      properties:
+        articleId:
+          type: string
+          description: 記事ID
+          example: "1"
+        articleTitle:
+          type: string
+          description: 記事タイトル
+          format: varchar(100)
+          example: 記事タイトル
+        content:
+          type: string
+          description: コンテンツ
+          example: コンテンツ
+        userId:
+          type: string
+          description: ユーザーID
+          example: userId
+        userName:
+          type: string
+          description: ニックネーム
+          example: ニックネーム
+        createdAt:
+          type: string
+          description: 作成日時
+          example: "2022-01-01T00:00:00+09:00"
+        updatedAt:
+          type: string
+          description: 更新日時
+          format: date-time
+          example: "2022-01-01T00:00:00+09:00"
+
+    articlesPutResponse:
+      type: object
+      required:
+        - articleId
+        - articleTitle
+        - content
+        - userId
+        - userName
+        - createdAt
+        - updatedAt
+      properties:
+        articleId:
+          type: string
+          description: 記事ID
+          example: "1"
+        articleTitle:
+          type: string
+          description: 記事タイトル
+          format: varchar(100)
+          example: 記事タイトル
+        content:
+          type: string
+          description: コンテンツ
+          example: コンテンツ
+        createdAt:
+          type: string
+          description: 作成日時
+          format: date-time
+        updatedAt:
+          type: string
+          description: 作成日時
+          format: date-time
 
     threadsPostRequest:
       type: object
@@ -444,11 +836,21 @@ components:
         createdAt:
           type: string
           description: 作成日時
+          format: date-time
           example: "2022-01-01T00:00:00+09:00"
         updatedAt:
           type: string
           description: 更新日時
+          format: date-time
           example: "2022-01-01T00:00:00+09:00"
+        userId:
+          type: string
+          description: ユーザーID
+          example: userId
+        userName:
+          type: string
+          description: ニックネーム
+          example: ニックネーム
 
     threadsGetResponse:
       type: object
