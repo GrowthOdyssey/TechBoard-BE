@@ -253,20 +253,23 @@ paths:
         - Article
       summary: 記事削除
       description: 記事を削除する。
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/articlesDeleteRequest"
+      parameters:
+        - name: articleId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: 記事ID
+            example: "1"
       responses:
         204:
           description: No Content
-        422:
-          description: Unprocessable Entity
+        400:
+          description: Bad Request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Response422"
+                $ref: "#/components/schemas/Response400"
         500:
           description: Internal Server Error
           content:
@@ -848,17 +851,6 @@ components:
           type: string
           description: ニックネーム
           example: ニックネーム
-
-    articlesDeleteRequest:
-      type: object
-      properties:
-        articleId:
-          type: string
-          description: 記事ID
-          example: "1"
-
-    articlesDeletePostResponse:
-      type: object
 
     threadsGetResponse:
       type: object
