@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "mock-server": "prism mock ./docs/swagger.yml"
+  },
+  "devDependencies": {
+    "@stoplight/prism-cli": "^4.6.1"
+  }
+}
