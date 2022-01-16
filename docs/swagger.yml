@@ -46,7 +46,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response500"
 
-  /v1/signup:
+  /v1/users:
     post:
       tags:
         - User
@@ -77,7 +77,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response500"
 
-  /v1/login:
+  /v1/users/login:
     post:
       tags:
         - User
@@ -475,6 +475,10 @@ components:
           type: string
           description: ニックネーム
           example: ニックネーム
+        avatarId:
+          type: string
+          description: アバターID
+          example: "1"
 
     signupResponse:
       type: object
@@ -492,6 +496,10 @@ components:
           type: string
           description: ニックネーム
           example: ニックネーム
+        avatarId:
+          type: string
+          description: アバターID
+          example: "1"
         createdAt:
           type: string
           description: 作成日時
@@ -529,6 +537,10 @@ components:
           type: string
           description: ニックネーム
           example: ニックネーム
+        avatarId:
+          type: string
+          description: アバターID
+          example: "1"
         createdAt:
           type: string
           description: 作成日時
