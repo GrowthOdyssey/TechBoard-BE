@@ -44,12 +44,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    description: ステータス
-                    example: NG
+                $ref: "#/components/schemas/Response500"
 
   /v1/signup:
     post:
