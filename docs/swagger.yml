@@ -9,10 +9,10 @@ tags:
     description: ヘルスチェック
   - name: User
     description: ユーザー
-  - name: Board
-    description: 掲示板
   - name: Article
     description: 記事
+  - name: Board
+    description: 掲示板
 
 servers:
   - url: http://localhost:8080
@@ -100,6 +100,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/loginResponse"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response400"
         422:
           description: Unprocessable Entity
           content:
@@ -112,7 +118,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Response500"
-  
+
   /v1/articles:
     get:
       tags:
@@ -171,6 +177,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/articlesPostResponse"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response401"
         422:
           description: Unprocessable Entity
           content:
@@ -235,6 +247,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/articlesPutResponse"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response401"
         422:
           description: Unprocessable Entity
           content:
@@ -270,6 +288,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Response400"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response401"
         500:
           description: Internal Server Error
           content:
@@ -342,6 +366,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/threadsPostResponse"
+        401:
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response401"
         422:
           description: Unprocessable Entity
           content:
@@ -554,65 +584,6 @@ components:
                 format: date-time
                 example: "2022-01-01T00:00:00+09:00"
 
-    threadsListGetResponse:
-      type: object
-      description: スレッド一覧取得レスポンス
-      properties:
-        threads:
-          type: array
-          description: スレッド一覧
-          items:
-            type: object
-            description: スレッド
-            required:
-              - threadId
-              - threadTitle
-              - categoryId
-              - createdAt
-              - updatedAt
-            properties:
-              threadId:
-                type: string
-                description: スレッドID
-                example: "1"
-              threadTitle:
-                type: string
-                description: スレッドタイトル
-                example: スレッドタイトル
-              categoryId:
-                type: string
-                description: カテゴリID
-                example: "1"
-              createdAt:
-                type: string
-                description: 作成日時
-                example: "2022-01-01T00:00:00+09:00"
-              updatedAt:
-                type: string
-                description: 更新日時
-                format: date-time
-                example: "2022-01-01T00:00:00+09:00"
-        pagination:
-          type: object
-          description: ページネーション情報
-          required:
-            - page
-            - perPage
-            - total
-          properties:
-            page:
-              type: integer
-              description: ページ番号
-              example: 1
-            perPage:
-              type: integer
-              description: 1ページあたりの件数
-              example: 20
-            total:
-              type: integer
-              description: 総件数
-              example: 99
-
     articlesPostRequest:
       type: object
       required:
@@ -794,6 +765,65 @@ components:
           type: string
           description: 作成日時
           format: date-time
+
+    threadsListGetResponse:
+      type: object
+      description: スレッド一覧取得レスポンス
+      properties:
+        threads:
+          type: array
+          description: スレッド一覧
+          items:
+            type: object
+            description: スレッド
+            required:
+              - threadId
+              - threadTitle
+              - categoryId
+              - createdAt
+              - updatedAt
+            properties:
+              threadId:
+                type: string
+                description: スレッドID
+                example: "1"
+              threadTitle:
+                type: string
+                description: スレッドタイトル
+                example: スレッドタイトル
+              categoryId:
+                type: string
+                description: カテゴリID
+                example: "1"
+              createdAt:
+                type: string
+                description: 作成日時
+                example: "2022-01-01T00:00:00+09:00"
+              updatedAt:
+                type: string
+                description: 更新日時
+                format: date-time
+                example: "2022-01-01T00:00:00+09:00"
+        pagination:
+          type: object
+          description: ページネーション情報
+          required:
+            - page
+            - perPage
+            - total
+          properties:
+            page:
+              type: integer
+              description: ページ番号
+              example: 1
+            perPage:
+              type: integer
+              description: 1ページあたりの件数
+              example: 20
+            total:
+              type: integer
+              description: 総件数
+              example: 99
 
     threadsPostRequest:
       type: object
