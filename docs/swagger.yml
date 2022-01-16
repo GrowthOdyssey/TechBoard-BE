@@ -571,30 +571,27 @@ components:
               createdAt:
                 type: string
                 description: 作成日時
-                format: date-time
                 example: "2022-01-01T00:00:00+09:00"
               updatedAt:
                 type: string
                 description: 更新日時
-                format: date-time
                 example: "2022-01-01T00:00:00+09:00"
 
     articlesPostRequest:
       type: object
       required:
         - articleTitle
-        - content
+        - description
         - userId
       properties:
         articleTitle:
           type: string
           description: 記事タイトル
-          format: varchar(100)
           example: 記事タイトル
-        content:
+        description:
           type: string
-          description: コンテンツ
-          example: コンテンツ
+          description: 記事内容
+          example: 記事内容
         userId:
           type: string
           description: ユーザーID
@@ -605,7 +602,7 @@ components:
       required:
         - articleId
         - articleTitle
-        - content
+        - description
         - userId
         - userName
         - createdAt
@@ -618,12 +615,11 @@ components:
         articleTitle:
           type: string
           description: 記事タイトル
-          format: varchar(100)
           example: 記事タイトル
-        content:
+        description:
           type: string
-          description: コンテンツ
-          example: コンテンツ
+          description: 記事内容
+          example: 記事内容
         userId:
           type: string
           description: ユーザーID
@@ -635,12 +631,10 @@ components:
         createdAt:
           type: string
           description: 作成日時
-          format: date-time
           example: "2022-01-01T00:00:00+09:00"
         updatedAt:
           type: string
           description: 更新日時
-          format: date-time
           example: "2022-01-01T00:00:00+09:00"
 
     articlesGetResponse:
@@ -649,7 +643,7 @@ components:
       required:
         - articleId
         - articleTitle
-        - content
+        - description
         - userId
         - userName
         - createdAt
@@ -662,12 +656,11 @@ components:
         articleTitle:
           type: string
           description: 記事タイトル
-          format: varchar(100)
           example: 記事タイトル
-        content:
+        description:
           type: string
-          description: コンテンツ
-          example: コンテンツ
+          description: 記事内容
+          example: 記事内容
         userId:
           type: string
           description: ユーザーID
@@ -683,7 +676,6 @@ components:
         updatedAt:
           type: string
           description: 更新日時
-          format: date-time
           example: "2022-01-01T00:00:00+09:00"
 
     articlesPutRequest:
@@ -691,7 +683,7 @@ components:
       required:
         - articleId
         - articleTitle
-        - content
+        - description
         - userId
         - userName
         - createdAt
@@ -704,12 +696,11 @@ components:
         articleTitle:
           type: string
           description: 記事タイトル
-          format: varchar(100)
           example: 記事タイトル
-        content:
+        description:
           type: string
-          description: コンテンツ
-          example: コンテンツ
+          description: 記事内容
+          example: 記事内容
         userId:
           type: string
           description: ユーザーID
@@ -725,7 +716,6 @@ components:
         updatedAt:
           type: string
           description: 更新日時
-          format: date-time
           example: "2022-01-01T00:00:00+09:00"
 
     articlesPutResponse:
@@ -733,7 +723,7 @@ components:
       required:
         - articleId
         - articleTitle
-        - content
+        - description
         - userId
         - userName
         - createdAt
@@ -746,12 +736,11 @@ components:
         articleTitle:
           type: string
           description: 記事タイトル
-          format: varchar(100)
           example: 記事タイトル
-        content:
+        description:
           type: string
-          description: コンテンツ
-          example: コンテンツ
+          description: 記事内容
+          example: 記事内容
         createdAt:
           type: string
           description: 作成日時
@@ -797,7 +786,6 @@ components:
               updatedAt:
                 type: string
                 description: 更新日時
-                format: date-time
                 example: "2022-01-01T00:00:00+09:00"
         pagination:
           type: object
@@ -858,16 +846,6 @@ components:
           type: string
           description: カテゴリID
           example: "1"
-        createdAt:
-          type: string
-          description: 作成日時
-          format: date-time
-          example: "2022-01-01T00:00:00+09:00"
-        updatedAt:
-          type: string
-          description: 更新日時
-          format: date-time
-          example: "2022-01-01T00:00:00+09:00"
         userId:
           type: string
           description: ユーザーID
@@ -876,6 +854,14 @@ components:
           type: string
           description: ニックネーム
           example: ニックネーム
+        createdAt:
+          type: string
+          description: 作成日時
+          example: "2022-01-01T00:00:00+09:00"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2022-01-01T00:00:00+09:00"
 
     threadsGetResponse:
       type: object
