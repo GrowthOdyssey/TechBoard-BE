@@ -3,12 +3,11 @@ package main
 import (
 	"fmt"
 
-	"github.com/GrowthOdyssey/TechBoard-BE/config"
+	// init関数コールのため空importする
+	_ "github.com/GrowthOdyssey/TechBoard-BE/app/models"
+	_ "github.com/GrowthOdyssey/TechBoard-BE/config"
 )
 
 func main() {
-	// config確認
-	fmt.Println(config.Config.Port)
-	fmt.Println(config.Config.SqlDriver)
-	fmt.Println(config.Config.DbName)
+	fmt.Println("起動")
 }
