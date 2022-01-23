@@ -49,3 +49,17 @@ $ npm run mock-server
 ```sh
 $ curl http://127.0.0.1:4010/health_check
 ```
+
+## DB
+
+- DB 作成
+
+```sh
+$ ./shell/create_db.sh
+```
+
+- テーブル作成
+
+```sh
+$ ./shell/create_table.sh
+```
