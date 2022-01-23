@@ -16,7 +16,7 @@ type ConfigList struct {
 var Config ConfigList
 
 // 初期化関数
-// main関数より前に呼ばれる
+// main.goでimportするとmain関数より前に呼ばれる
 func init() {
 	LoadConfig()
 }
