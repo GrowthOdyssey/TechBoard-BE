@@ -23,14 +23,14 @@ func init() {
 	}
 
 	// TODO aiharanaoya 以下、接続確認処理。後で消す
-	cmd := `
-		insert into users (name, email)
-		values ($1, $2)
-	`
+	// cmd := `
+	// 	insert into users (name, email)
+	// 	values ($1, $2)
+	// `
 
-	_, err = Db.Exec(cmd, "name", "test@test.com")
+	// _, err = Db.Exec(cmd, "name", "test@test.com")
 
-	if err != nil {
-		fmt.Println(err)
-	}
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
 }
