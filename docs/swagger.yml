@@ -81,8 +81,8 @@ paths:
     post:
       tags:
         - User
-      summary: ユーザーログイン
-      description: ユーザーログインを行う。
+      summary: ログイン
+      description: ログインを行う。
       requestBody:
         content:
           application/json:
@@ -107,6 +107,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Response422"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
+
+  /v1/users/logout/{userId}:
+    delete:
+      tags:
+        - User
+      summary: ログアウト
+      description: ログアウトを行う。
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: ユーザーID
+            example: "userId"
+      responses:
+        204:
+          description: No Content
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response400"
         500:
           description: Internal Server Error
           content:
@@ -160,6 +190,14 @@ paths:
         - Article
       summary: 記事作成
       description: 記事を作成する。
+      parameters:
+        - name: accessToken
+          in: header
+          required: true
+          schema:
+            type: string
+            description: アクセストークン
+            example: "accessToken"
       requestBody:
         content:
           application/json:
@@ -230,6 +268,14 @@ paths:
         - Article
       summary: 記事更新
       description: 記事を更新する。
+      parameters:
+        - name: accessToken
+          in: header
+          required: true
+          schema:
+            type: string
+            description: アクセストークン
+            example: "accessToken"
       requestBody:
         content:
           application/json:
@@ -267,6 +313,13 @@ paths:
       summary: 記事削除
       description: 記事を削除する。
       parameters:
+        - name: accessToken
+          in: header
+          required: true
+          schema:
+            type: string
+            description: アクセストークン
+            example: "accessToken"
         - name: articleId
           in: path
           required: true
@@ -349,6 +402,14 @@ paths:
         - Board
       summary: スレッド作成
       description: スレッドを作成する。
+      parameters:
+        - name: accessToken
+          in: header
+          required: true
+          schema:
+            type: string
+            description: アクセストークン
+            example: "accessToken"
       requestBody:
         content:
           application/json:
@@ -527,6 +588,7 @@ components:
       required:
         - userId
         - userName
+        - accessToken
         - createdAt
       properties:
         userId:
@@ -541,6 +603,10 @@ components:
           type: string
           description: アバターID
           example: "1"
+        accessToken:
+          type: string
+          description: アクセストークン
+          example: "accessToken"
         createdAt:
           type: string
           description: 作成日時
