@@ -15,7 +15,21 @@ type HealthCheck struct {
 
 // ルーティング設定
 func SetRouter() {
+	// ヘルスチェック
 	http.HandleFunc("/health_check", healthCheck)
+
+	// ユーザー
+	http.HandleFunc("/v1/users", usersSignUpHandler)
+	http.HandleFunc("/v1/users/login", usersLoginHandler)
+	http.HandleFunc("/v1/users/logout/", usersLogoutHandler)
+
+	// 記事
+	http.HandleFunc("/v1/articles", articlesHandler)
+	http.HandleFunc("/v1/articles/", articlesIdHandler)
+
+	// スレッド
+	http.HandleFunc("/v1/threads", threadsHandler)
+	http.HandleFunc("/v1/threads/", threadsIdHandler)
 }
 
 // サーバーを起動する
@@ -40,7 +54,8 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprint(w, string(healthCheckRes))
 	} else {
-		// TODO aiharanaoya エラーハンドリング
-		fmt.Println("エラー")
+		// TODO aiharanaoya
+		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
