@@ -38,6 +38,11 @@ func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// コントローラ関数
+// それぞれのAPIに対応した関数。
+// モデル関数で定義した構造体の呼び出し、JSONの変換処理等を行う。
+// DBのアクセス関数、レシーバメソッド、複雑になるロジックはモデル関数に定義する。
+
 // スレッド一覧取得
 func getThreads() {
 	fmt.Println("スレッド一覧取得処理")

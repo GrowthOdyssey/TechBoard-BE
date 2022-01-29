@@ -5,6 +5,10 @@ import (
 	"net/http"
 )
 
+// ハンドラ関数
+// URL、HTTPメソッドから呼び出す関数をハンドリングする。
+// 基本的にコントローラ関数を呼び出すのみで処理はコントローラ関数に記載する。
+
 // ユーザー登録ハンドラ
 func usersSignUpHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
@@ -37,6 +41,11 @@ func usersLogoutHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
+
+// コントローラ関数
+// それぞれのAPIに対応した関数。
+// モデル関数で定義した構造体の呼び出し、JSONの変換処理等を行う。
+// DBのアクセス関数、レシーバメソッド、複雑になるロジックはモデル関数に定義する。
 
 // ユーザー登録
 func usersSignUp() {
