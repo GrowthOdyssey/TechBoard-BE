@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/GrowthOdyssey/TechBoard-BE/config"
@@ -30,6 +31,15 @@ type ThreadsAndPagination struct {
 	Pagination Pagination `json:"pagination"`
 }
 
+type ThreadAndUser struct {
+	Id               string    `json:"threadId"`
+	UserId           string    `json:"userId"`
+	ThreadCategoryId string    `json:"categoryId"`
+	Title            string    `json:"threadTitle"`
+	CreatedAt        time.Time `json:"createdAt"`
+	UpdatedAt        time.Time `json:"updatedAt"`
+	UserName         string    `json:"userName"`
+}
 
 func (t *Thread) ThreadReceiver() {
 	fmt.Println(t.Id, t.Title)
@@ -39,7 +49,15 @@ func SampleFunction(id string) {
 	fmt.Println(id)
 }
 
-func GetThreadsSql(page, perPage int) *ThreadsAndPagination {
+func GetThreadsSql(page, perPage string) *ThreadsAndPagination {
+	pageInt, pageErr := strconv.Atoi(page)
+	if pageErr != nil {
+		pageInt = 1
+	}
+	perPageInt, perPageErr := strconv.Atoi(perPage)
+	if perPageErr != nil {
+		perPageInt = 20
+	}
 	// DB接続
 	connection := "user=test_user dbname=" + config.Config.DbName + " password=password sslmode=disable"
 	Db, _ = sql.Open(config.Config.SqlDriver, connection)
@@ -73,5 +91,50 @@ func GetThreadsSql(page, perPage int) *ThreadsAndPagination {
 		log.Fatal(err)
 	}
 
-	return &ThreadsAndPagination{threads, Pagination{page, perPage, count}}
+	return &ThreadsAndPagination{threads, Pagination{pageInt, perPageInt, count}}
+}
+
+func PostThreadSql(accessToken, threadTitle, categoryId string) *ThreadAndUser {
+	connection := "user=test_user dbname=" + config.Config.DbName + " password=password sslmode=disable"
+	Db, _ = sql.Open(config.Config.SqlDriver, connection)
+	defer Db.Close()
+	selectAccessTokenCmd := "select user_id from logins where uuid = $1;"
+	var userId string
+	selectAccessTokenErr := Db.QueryRow(selectAccessTokenCmd, accessToken).Scan(&userId)
+	if selectAccessTokenErr != nil {
+		log.Fatalln(selectAccessTokenErr)
+	}
+
+	insertCmd := "INSERT INTO threads (user_id,thread_category_id,title,created_at,updated_at) VALUES ($1,$2,$3,$4,$5) RETURNING *;"
+	categoryIdInt, categoryIdErr := strconv.Atoi(categoryId)
+	if categoryIdErr != nil {
+		categoryIdInt = 1
+	}
+	var newThread Thread
+	insertErr := Db.QueryRow(insertCmd, userId, categoryIdInt, threadTitle, time.Now(), time.Now()).Scan(
+		&newThread.Id,
+		&newThread.UserId,
+		&newThread.ThreadCategoryId,
+		&newThread.Title,
+		&newThread.CreatedAt,
+		&newThread.UpdatedAt)
+	if insertErr != nil {
+		log.Fatal(insertErr)
+	}
+
+	selectUserName := "select name from users where user_id = $1;"
+	var userName string
+	selectUserNameErr := Db.QueryRow(selectUserName, newThread.UserId).Scan(&userName)
+	if selectUserNameErr != nil {
+		log.Fatalln(selectUserNameErr)
+	}
+
+	return &ThreadAndUser{
+		newThread.Id,
+		newThread.UserId,
+		newThread.ThreadCategoryId,
+		newThread.Title,
+		newThread.CreatedAt,
+		newThread.UpdatedAt,
+		userName}
 }

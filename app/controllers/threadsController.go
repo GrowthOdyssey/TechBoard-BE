@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/GrowthOdyssey/TechBoard-BE/app/models"
 )
@@ -13,18 +12,21 @@ import (
 func threadsHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		page, pageErr := strconv.Atoi(r.FormValue("page"))
-		if pageErr != nil {
-			page = 1
-		}
-		perPage, perPageErr := strconv.Atoi(r.FormValue("perPage"))
-		if perPageErr != nil {
-			perPage = 20
-		}
+		page := r.FormValue("page")
+		perPage := r.FormValue("perPage")
 		threads := getThreads(page, perPage)
 		json.NewEncoder(w).Encode(threads)
 	case http.MethodPost:
-		postThread()
+		accessToken := r.Header.Get("accessToken")
+		if accessToken == "" {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		e := r.ParseForm()
+		fmt.Println(e, accessToken)
+		threadTitle := r.Form.Get("threadTitle")
+		categoryId := r.Form.Get("categoryId")
+		newThread := postThread(accessToken, threadTitle, categoryId)
+		json.NewEncoder(w).Encode(newThread)
 	default:
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
@@ -48,14 +50,15 @@ func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
 // コントローラ関数
 
 // スレッド一覧取得
-func getThreads(page, perPage int) *models.ThreadsAndPagination {
+func getThreads(page, perPage string) *models.ThreadsAndPagination {
 	fmt.Println("スレッド一覧取得処理")
 	return models.GetThreadsSql(page, perPage)
 }
 
 // スレッド作成
-func postThread() {
+func postThread(accessToken, threadTitle, categoryId string) *models.ThreadAndUser {
 	fmt.Println("スレッド作成処理")
+	return models.PostThreadSql(accessToken, threadTitle, categoryId)
 }
 
 // スレッド取得

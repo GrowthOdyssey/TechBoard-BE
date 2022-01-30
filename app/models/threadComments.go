@@ -9,7 +9,7 @@ import (
 type ThreadComment struct {
 	Id        int       `json:"id"`
 	UserId    string    `json:"userId"`
-	ThradId   int       `json:"threadId"`
+	ThreadId  int       `json:"threadId"`
 	SessionId string    `json:"sessionId"`
 	Text      string    `json:"title"`
 	CreatedAt time.Time `json:"createdAt"`
