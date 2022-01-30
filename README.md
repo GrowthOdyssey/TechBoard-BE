@@ -63,3 +63,9 @@ $ ./shell/create_db.sh
 ```sh
 $ ./shell/create_table.sh
 ```
+
+- テストデータ作成
+
+```sh
+$ ./shell/create_testdata.sh
+```
