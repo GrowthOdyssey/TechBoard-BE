@@ -4,15 +4,24 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/GrowthOdyssey/TechBoard-BE/app/models"
 )
 
 // スレッドハンドラ
-func threadsHandler(w http.ResponseWriter, r *http.Request /* ,page,perPage int */) {
+func threadsHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		threads := getThreads(1, 2) //今はpage,perPageベタ打ち
+		page, pageErr := strconv.Atoi(r.FormValue("page"))
+		if pageErr != nil {
+			page = 1
+		}
+		perPage, perPageErr := strconv.Atoi(r.FormValue("perPage"))
+		if perPageErr != nil {
+			perPage = 20
+		}
+		threads := getThreads(page, perPage)
 		json.NewEncoder(w).Encode(threads)
 	case http.MethodPost:
 		postThread()
