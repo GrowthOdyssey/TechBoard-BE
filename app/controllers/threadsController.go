@@ -1,24 +1,22 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/GrowthOdyssey/TechBoard-BE/app/models"
 )
 
-// ハンドラ関数
-// URL、HTTPメソッドから呼び出す関数をハンドリングする。
-// 基本的にコントローラ関数を呼び出すのみで処理はコントローラ関数に記載する。
-
 // スレッドハンドラ
-func threadsHandler(w http.ResponseWriter, r *http.Request) {
+func threadsHandler(w http.ResponseWriter, r *http.Request /* ,page,perPage int */) {
 	switch r.Method {
 	case http.MethodGet:
-		getThreads()
+		threads := getThreads(1, 2) //今はpage,perPageベタ打ち
+		json.NewEncoder(w).Encode(threads)
 	case http.MethodPost:
 		postThread()
 	default:
-		// TODO aiharanaoya
-		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
@@ -39,13 +37,11 @@ func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // コントローラ関数
-// それぞれのAPIに対応した関数。
-// モデル関数で定義した構造体の呼び出し、JSONの変換処理等を行う。
-// DBのアクセス関数、レシーバメソッド、複雑になるロジックはモデル関数に定義する。
 
 // スレッド一覧取得
-func getThreads() {
+func getThreads(page, perPage int) *models.ThreadsAndPagination {
 	fmt.Println("スレッド一覧取得処理")
+	return models.GetThreadsSql(page, perPage)
 }
 
 // スレッド作成
