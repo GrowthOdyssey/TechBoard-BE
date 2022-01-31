@@ -42,7 +42,13 @@ func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(thread)
 	// MEMO URLにcomments入っているか判定してハンドリングしたいかも
 	case http.MethodPost:
-		postThreadComments()
+		e := r.ParseForm()
+		fmt.Println(e)
+		userId := r.Form.Get("userId")
+		sessionId := r.Form.Get("sessionId")
+		commentTitle := r.Form.Get("commentTitle")
+		comment := postThreadComments(id, userId, sessionId, commentTitle)
+		json.NewEncoder(w).Encode(comment)
 	default:
 		// TODO aiharanaoya
 		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
@@ -71,6 +77,7 @@ func getThreadById(id string) *models.ThreadAndComments {
 }
 
 // スレッドコメント作成
-func postThreadComments() {
+func postThreadComments(id, userId, sessionId, commentTitle string) *models.CommentAndThreadAndUser {
 	fmt.Println("スレッドコメント作成処理")
+	return models.PostCommentsSql(id, userId, sessionId, commentTitle)
 }

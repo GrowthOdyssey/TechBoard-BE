@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/GrowthOdyssey/TechBoard-BE/config"
@@ -75,3 +76,42 @@ func GetCommentsByThreadIdSql(threadId string, Db *sql.DB) (*[]ThreadComment, in
 	return &comments, len(comments)
 }
 
+func PostCommentsSql(threadId, userId, sessionId, commentTitle string) *CommentAndThreadAndUser {
+	connection := "user=test_user dbname=" + config.Config.DbName + " password=password sslmode=disable"
+	Db, _ = sql.Open(config.Config.SqlDriver, connection)
+	defer Db.Close()
+	threadIdInt, threadIdErr := strconv.Atoi(threadId)
+	if threadIdErr != nil {
+		log.Fatal(threadIdErr)
+	}
+	insertCmd := "INSERT INTO thread_comments (user_id,thread_id,session_id,text,created_at,updated_at) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *;"
+	var newComment Comment
+	insertErr := Db.QueryRow(insertCmd, userId, threadIdInt, sessionId, commentTitle, time.Now(), time.Now()).Scan(
+		&newComment.Id,
+		&newComment.UserId,
+		&newComment.ThreadId,
+		&newComment.SessionId,
+		&newComment.Text,
+		&newComment.CreatedAt,
+		&newComment.UpdatedAt)
+	if insertErr != nil {
+		log.Fatal(insertErr)
+	}
+
+	selectUserName := "select thread_comments.id, text, thread_id, title, COALESCE(thread_comments.user_id,''), COALESCE(users.name,''), COALESCE(thread_comments.session_id,''), thread_comments.created_at from thread_comments LEFT JOIN users ON thread_comments.user_id = users.user_id LEFT JOIN threads ON thread_comments.thread_id = threads.id where thread_comments.id = $1;"
+	var commentAndThreadAndUser CommentAndThreadAndUser
+	selectUserNameErr := Db.QueryRow(selectUserName, newComment.Id).Scan(
+		&commentAndThreadAndUser.Id,
+		&commentAndThreadAndUser.Text,
+		&commentAndThreadAndUser.ThreadId,
+		&commentAndThreadAndUser.ThreadTitle,
+		&commentAndThreadAndUser.UserId,
+		&commentAndThreadAndUser.UserName,
+		&commentAndThreadAndUser.SessionId,
+		&commentAndThreadAndUser.CreatedAt,
+	)
+	if selectUserNameErr != nil {
+		log.Fatalln(selectUserNameErr)
+	}
+	return &commentAndThreadAndUser
+}
