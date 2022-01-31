@@ -514,6 +514,26 @@ paths:
               schema:
                 $ref: "#/components/schemas/Response500"
 
+  /v1/threads/categories:
+    get:
+      tags:
+        - Board
+      summary: スレッドカテゴリ一覧取得
+      description: スレッドカテゴリの一覧を取得する。
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/threadsCategoriesListGetResponse"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
+
 components:
   schemas:
     signupRequest:
@@ -1099,6 +1119,29 @@ components:
           type: string
           description: 作成日時
           example: "2022-01-01T00:00:00+09:00"
+
+    threadsCategoriesListGetResponse:
+      type: object
+      description: スレッドカテゴリ一覧取得レスポンス
+      properties:
+        categories:
+          type: array
+          description: カテゴリ一覧
+          items:
+            type: object
+            description: カテゴリ
+            required:
+              - categoryId
+              - categoryName
+            properties:
+              categoryId:
+                type: string
+                description: カテゴリID
+                example: "1"
+              categoryName:
+                type: string
+                description: カテゴリ名
+                example: カテゴリ
 
     Response400:
       type: object

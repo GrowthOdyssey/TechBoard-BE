@@ -54,7 +54,7 @@ create table threads (
 -- スレッドのコメント
 create table thread_comments (
   id          serial primary key,
-  user_id     varchar(20) references users(user_id),
+  user_id     varchar(20),
   thread_id   integer references threads(id),
   session_id  varchar(100),
   text        varchar(2000) not null,
