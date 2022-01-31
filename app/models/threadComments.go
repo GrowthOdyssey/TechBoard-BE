@@ -51,7 +51,8 @@ func ThreadCommentFunction(id string) {
 
 func GetCommentsByThreadIdSql(threadId string, Db *sql.DB) (*[]ThreadComment, int) {
 
-	stmt, _ := Db.Prepare("select id, text, COALESCE(thread_comments.user_id,''), COALESCE(users.name,''), COALESCE(session_id,''), thread_comments.created_at from thread_comments LEFT JOIN users ON thread_comments.user_id = users.user_id where thread_id = $1;")
+	stmt, _ := Db.Prepare("SELECT id, text, COALESCE(thread_comments.user_id,''), COALESCE(users.name,''), COALESCE(session_id,''), thread_comments.created_at " +
+		"FROM thread_comments LEFT JOIN users ON thread_comments.user_id = users.user_id WHERE thread_id = $1;")
 	defer stmt.Close()
 	var comments []ThreadComment
 	rows, err := stmt.Query(threadId)
@@ -98,7 +99,10 @@ func PostCommentsSql(threadId, userId, sessionId, commentTitle string) *CommentA
 		log.Fatal(insertErr)
 	}
 
-	selectUserName := "select thread_comments.id, text, thread_id, title, COALESCE(thread_comments.user_id,''), COALESCE(users.name,''), COALESCE(thread_comments.session_id,''), thread_comments.created_at from thread_comments LEFT JOIN users ON thread_comments.user_id = users.user_id LEFT JOIN threads ON thread_comments.thread_id = threads.id where thread_comments.id = $1;"
+	selectUserName := "SELECT thread_comments.id, text, thread_id, title, COALESCE(thread_comments.user_id,''), " +
+		"COALESCE(users.name,''), COALESCE(thread_comments.session_id,''), thread_comments.created_at " +
+		"FROM thread_comments LEFT JOIN users ON thread_comments.user_id = users.user_id " +
+		"LEFT JOIN threads ON thread_comments.thread_id = threads.id where thread_comments.id = $1;"
 	var commentAndThreadAndUser CommentAndThreadAndUser
 	selectUserNameErr := Db.QueryRow(selectUserName, newComment.Id).Scan(
 		&commentAndThreadAndUser.Id,
