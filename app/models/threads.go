@@ -41,6 +41,17 @@ type ThreadAndUser struct {
 	UserName         string    `json:"userName"`
 }
 
+type ThreadAndComments struct {
+	Id               string           `json:"threadId"`
+	UserId           string           `json:"userId"`
+	ThreadCategoryId string           `json:"categoryId"`
+	Title            string           `json:"threadTitle"`
+	CreatedAt        time.Time        `json:"createdAt"`
+	UpdatedAt        time.Time        `json:"updatedAt"`
+	Comments         *[]ThreadComment `json:"comments"`
+	CommentsCount    int              `json:"commentsCount"`
+}
+
 func (t *Thread) ThreadReceiver() {
 	fmt.Println(t.Id, t.Title)
 }
@@ -83,15 +94,17 @@ func GetThreadsSql(page, perPage string) *ThreadsAndPagination {
 		threads = append(threads, p)
 	}
 
-	// スレッド総件数取得
-	selectCountCmd := "select count(*) from threads;"
-	var count int
-	err := Db.QueryRow(selectCountCmd).Scan(&count)
-	if err != nil {
-		log.Fatal(err)
-	}
+	/*
+		// スレッド総件数取得
+		selectCountCmd := "select count(*) from threads;"
+		var count int
+		err := Db.QueryRow(selectCountCmd).Scan(&count)
+		if err != nil {
+			log.Fatal(err)
+		}
+	*/
 
-	return &ThreadsAndPagination{threads, Pagination{pageInt, perPageInt, count}}
+	return &ThreadsAndPagination{threads, Pagination{pageInt, perPageInt, len(threads)}}
 }
 
 func PostThreadSql(accessToken, threadTitle, categoryId string) *ThreadAndUser {
@@ -137,4 +150,39 @@ func PostThreadSql(accessToken, threadTitle, categoryId string) *ThreadAndUser {
 		newThread.CreatedAt,
 		newThread.UpdatedAt,
 		userName}
+}
+
+func GetThreadByIdSql(id string) *ThreadAndComments {
+	selectThreadById := "select * from threads where id = $1;"
+	var thread Thread
+	selectThreadByIdErr := Db.QueryRow(selectThreadById, id).Scan(
+		&thread.Id,
+		&thread.UserId,
+		&thread.ThreadCategoryId,
+		&thread.Title,
+		&thread.CreatedAt,
+		&thread.UpdatedAt)
+	if selectThreadByIdErr != nil {
+		log.Fatalln(selectThreadByIdErr)
+	}
+	threadComments, commentsCount := GetCommentsByThreadIdSql(id, Db)
+
+	/*
+		selectCountThreadComments := "select count(*) from thread_comments where thread_id = $1;"
+		var commentsCount int
+		err := Db.QueryRow(selectCountThreadComments, id).Scan(&commentsCount)
+		if err != nil {
+			log.Fatal(err)
+		}
+	*/
+
+	return &ThreadAndComments{
+		thread.Id,
+		thread.UserId,
+		thread.ThreadCategoryId,
+		thread.Title,
+		thread.CreatedAt,
+		thread.UpdatedAt,
+		threadComments,
+		commentsCount}
 }

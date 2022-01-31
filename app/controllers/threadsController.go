@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/GrowthOdyssey/TechBoard-BE/app/models"
 )
@@ -34,9 +35,11 @@ func threadsHandler(w http.ResponseWriter, r *http.Request) {
 
 // スレッドハンドラ（パスパラメータが存在する場合）
 func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
+	id := strings.TrimPrefix(r.URL.Path, "/v1/threads/")
 	switch r.Method {
 	case http.MethodGet:
-		getThreadById()
+		thread := getThreadById(id)
+		json.NewEncoder(w).Encode(thread)
 	// MEMO URLにcomments入っているか判定してハンドリングしたいかも
 	case http.MethodPost:
 		postThreadComments()
@@ -62,8 +65,9 @@ func postThread(accessToken, threadTitle, categoryId string) *models.ThreadAndUs
 }
 
 // スレッド取得
-func getThreadById() {
+func getThreadById(id string) *models.ThreadAndComments {
 	fmt.Println("スレッド取得処理")
+	return models.GetThreadByIdSql(id)
 }
 
 // スレッドコメント作成
