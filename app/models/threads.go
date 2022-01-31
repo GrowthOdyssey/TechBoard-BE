@@ -153,6 +153,9 @@ func PostThreadSql(accessToken, threadTitle, categoryId string) *ThreadAndUser {
 }
 
 func GetThreadByIdSql(id string) *ThreadAndComments {
+	connection := "user=test_user dbname=" + config.Config.DbName + " password=password sslmode=disable"
+	Db, _ = sql.Open(config.Config.SqlDriver, connection)
+	defer Db.Close()
 	selectThreadById := "select * from threads where id = $1;"
 	var thread Thread
 	selectThreadByIdErr := Db.QueryRow(selectThreadById, id).Scan(
