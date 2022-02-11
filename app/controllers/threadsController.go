@@ -11,6 +11,7 @@ import (
 
 // スレッドハンドラ
 func threadsHandler(w http.ResponseWriter, r *http.Request) {
+	allowCors(w)
 	switch r.Method {
 	case http.MethodGet:
 		page := r.FormValue("page")
@@ -45,6 +46,7 @@ func threadsHandler(w http.ResponseWriter, r *http.Request) {
 
 // スレッドハンドラ（パスパラメータが存在する場合）
 func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
+	allowCors(w)
 	id := strings.TrimPrefix(r.URL.Path, "/v1/threads/")
 	switch r.Method {
 	case http.MethodGet:

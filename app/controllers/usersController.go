@@ -14,6 +14,7 @@ import (
 
 // ユーザー登録ハンドラ
 func usersSignUpHandler(w http.ResponseWriter, r *http.Request) {
+	allowCors(w)
 	if r.Method == http.MethodPost {
 		usersSignUp(w, r)
 	} else {
@@ -25,6 +26,7 @@ func usersSignUpHandler(w http.ResponseWriter, r *http.Request) {
 
 // ログインハンドラ
 func usersLoginHandler(w http.ResponseWriter, r *http.Request) {
+	allowCors(w)
 	if r.Method == http.MethodPost {
 		usersLogin()
 	} else {
@@ -36,6 +38,7 @@ func usersLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 // ログアウトハンドラ
 func usersLogoutHandler(w http.ResponseWriter, r *http.Request) {
+	allowCors(w)
 	if r.Method == http.MethodDelete {
 		usersLogout()
 	} else {

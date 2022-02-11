@@ -11,6 +11,7 @@ import (
 
 // 記事ハンドラ
 func articlesHandler(w http.ResponseWriter, r *http.Request) {
+	allowCors(w)
 	switch r.Method {
 	case http.MethodGet:
 		getArticles()
@@ -25,6 +26,7 @@ func articlesHandler(w http.ResponseWriter, r *http.Request) {
 
 // 記事ハンドラ（パスパラメータが存在する場合）
 func articlesIdHandler(w http.ResponseWriter, r *http.Request) {
+	allowCors(w)
 	switch r.Method {
 	case http.MethodGet:
 		getArticleById()
