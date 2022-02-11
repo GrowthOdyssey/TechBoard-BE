@@ -22,11 +22,17 @@ func threadsHandler(w http.ResponseWriter, r *http.Request) {
 		if accessToken == "" {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		}
-		e := r.ParseForm()
-		fmt.Println(e, accessToken)
-		threadTitle := r.Form.Get("threadTitle")
-		categoryId := r.Form.Get("categoryId")
-		newThread := postThread(accessToken, threadTitle, categoryId)
+
+		var reqBody struct {
+			ThreadTitle string `json:"threadTitle"`
+			CategoryId  string `json:"categoryId"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&reqBody)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		newThread := postThread(accessToken, reqBody.ThreadTitle, reqBody.CategoryId)
 		json.NewEncoder(w).Encode(newThread)
 	default:
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -42,12 +48,16 @@ func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(thread)
 	// MEMO URLにcomments入っているか判定してハンドリングしたいかも
 	case http.MethodPost:
-		e := r.ParseForm()
-		fmt.Println(e)
-		userId := r.Form.Get("userId")
-		sessionId := r.Form.Get("sessionId")
-		commentTitle := r.Form.Get("commentTitle")
-		comment := postThreadComments(id, userId, sessionId, commentTitle)
+		var reqBody struct {
+			UserId       string `json:"userId"`
+			SessionId    string `json:"sessionId"`
+			CommentTitle string `json:"commentTitle"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&reqBody)
+		if err != nil {
+			fmt.Println(err)
+		}
+		comment := postThreadComments(id, reqBody.UserId, reqBody.SessionId, reqBody.CommentTitle)
 		json.NewEncoder(w).Encode(comment)
 	default:
 		// TODO aiharanaoya
