@@ -31,14 +31,13 @@ type ThreadComment struct {
 }
 
 type CommentAndThreadAndUser struct {
-	Id          string    `json:"commentId"`
-	Text        string    `json:"commentTitle"`
-	ThreadId    string    `json:"threadId"`
-	ThreadTitle string    `json:"threadTitle"`
-	UserId      string    `json:"userId"`
-	UserName    string    `json:"userName"`
-	SessionId   string    `json:"sessionId"`
-	CreatedAt   time.Time `json:"createdAt"`
+	Id        string    `json:"commentId"`
+	Text      string    `json:"commentTitle"`
+	ThreadId  string    `json:"threadId"`
+	UserId    string    `json:"userId"`
+	UserName  string    `json:"userName"`
+	SessionId string    `json:"sessionId"`
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 func (c *ThreadComment) ThreadCommentReceiver() {
@@ -99,16 +98,15 @@ func PostCommentsSql(threadId, userId, sessionId, commentTitle string) *CommentA
 		log.Fatal(insertErr)
 	}
 
-	selectUserName := "SELECT thread_comments.id, text, thread_id, title, COALESCE(thread_comments.user_id,''), " +
+	selectUserName := "SELECT thread_comments.id, text, thread_id, COALESCE(thread_comments.user_id,''), " +
 		"COALESCE(users.name,''), COALESCE(thread_comments.session_id,''), thread_comments.created_at " +
 		"FROM thread_comments LEFT JOIN users ON thread_comments.user_id = users.user_id " +
-		"LEFT JOIN threads ON thread_comments.thread_id = threads.id where thread_comments.id = $1;"
+		"where thread_comments.id = $1;"
 	var commentAndThreadAndUser CommentAndThreadAndUser
 	selectUserNameErr := Db.QueryRow(selectUserName, newComment.Id).Scan(
 		&commentAndThreadAndUser.Id,
 		&commentAndThreadAndUser.Text,
 		&commentAndThreadAndUser.ThreadId,
-		&commentAndThreadAndUser.ThreadTitle,
 		&commentAndThreadAndUser.UserId,
 		&commentAndThreadAndUser.UserName,
 		&commentAndThreadAndUser.SessionId,
