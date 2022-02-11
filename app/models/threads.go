@@ -1,13 +1,10 @@
 package models
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"strconv"
 	"time"
-
-	"github.com/GrowthOdyssey/TechBoard-BE/config"
 )
 
 // スレッド
@@ -70,9 +67,6 @@ func GetThreadsSql(page, perPage string) *ThreadsAndPagination {
 		perPageInt = 20
 	}
 	// DB接続
-	connection := "user=test_user dbname=" + config.Config.DbName + " password=password sslmode=disable"
-	Db, _ = sql.Open(config.Config.SqlDriver, connection)
-	defer Db.Close()
 
 	// スレッド一覧取得
 	var threads []Thread
@@ -108,9 +102,6 @@ func GetThreadsSql(page, perPage string) *ThreadsAndPagination {
 }
 
 func PostThreadSql(accessToken, threadTitle, categoryId string) *ThreadAndUser {
-	connection := "user=test_user dbname=" + config.Config.DbName + " password=password sslmode=disable"
-	Db, _ = sql.Open(config.Config.SqlDriver, connection)
-	defer Db.Close()
 	selectAccessTokenCmd := "select user_id from logins where uuid = $1;"
 	var userId string
 	selectAccessTokenErr := Db.QueryRow(selectAccessTokenCmd, accessToken).Scan(&userId)
@@ -153,9 +144,6 @@ func PostThreadSql(accessToken, threadTitle, categoryId string) *ThreadAndUser {
 }
 
 func GetThreadByIdSql(id string) *ThreadAndComments {
-	connection := "user=test_user dbname=" + config.Config.DbName + " password=password sslmode=disable"
-	Db, _ = sql.Open(config.Config.SqlDriver, connection)
-	defer Db.Close()
 	selectThreadById := "select * from threads where id = $1;"
 	var thread Thread
 	selectThreadByIdErr := Db.QueryRow(selectThreadById, id).Scan(

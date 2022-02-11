@@ -6,8 +6,6 @@ import (
 	"log"
 	"strconv"
 	"time"
-
-	"github.com/GrowthOdyssey/TechBoard-BE/config"
 )
 
 // スレッドコメント
@@ -77,9 +75,6 @@ func GetCommentsByThreadIdSql(threadId string, Db *sql.DB) (*[]ThreadComment, in
 }
 
 func PostCommentsSql(threadId, userId, sessionId, commentTitle string) *CommentAndThreadAndUser {
-	connection := "user=test_user dbname=" + config.Config.DbName + " password=password sslmode=disable"
-	Db, _ = sql.Open(config.Config.SqlDriver, connection)
-	defer Db.Close()
 	threadIdInt, threadIdErr := strconv.Atoi(threadId)
 	if threadIdErr != nil {
 		log.Fatal(threadIdErr)
