@@ -64,3 +64,10 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
+
+// CORS許可
+func allowCors(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Headers", "*")
+  w.Header().Set("Access-Control-Allow-Origin", "*")
+  w.Header().Set( "Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS" )
+}
