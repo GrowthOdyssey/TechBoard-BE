@@ -1,36 +1,72 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
-)
+	"strings"
 
-// ハンドラ関数
-// URL、HTTPメソッドから呼び出す関数をハンドリングする。
-// 基本的にコントローラ関数を呼び出すのみで処理はコントローラ関数に記載する。
+	"github.com/GrowthOdyssey/TechBoard-BE/app/models"
+)
 
 // スレッドハンドラ
 func threadsHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		getThreads()
+		page := r.FormValue("page")
+		perPage := r.FormValue("perPage")
+		threads := getThreads(page, perPage)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		json.NewEncoder(w).Encode(threads)
 	case http.MethodPost:
-		postThread()
+		accessToken := r.Header.Get("accessToken")
+		if accessToken == "" {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+
+		var reqBody struct {
+			ThreadTitle string `json:"threadTitle"`
+			CategoryId  string `json:"categoryId"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&reqBody)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		newThread := postThread(accessToken, reqBody.ThreadTitle, reqBody.CategoryId)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		json.NewEncoder(w).Encode(newThread)
 	default:
-		// TODO aiharanaoya
-		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
 
 // スレッドハンドラ（パスパラメータが存在する場合）
 func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
+	id := strings.TrimPrefix(r.URL.Path, "/v1/threads/")
 	switch r.Method {
 	case http.MethodGet:
-		getThreadById()
+		thread := getThreadById(id)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		json.NewEncoder(w).Encode(thread)
 	// MEMO URLにcomments入っているか判定してハンドリングしたいかも
 	case http.MethodPost:
-		postThreadComments()
+		var reqBody struct {
+			UserId       string `json:"userId"`
+			SessionId    string `json:"sessionId"`
+			CommentTitle string `json:"commentTitle"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&reqBody)
+		if err != nil {
+			fmt.Println(err)
+		}
+		comment := postThreadComments(id, reqBody.UserId, reqBody.SessionId, reqBody.CommentTitle)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		json.NewEncoder(w).Encode(comment)
 	default:
 		// TODO aiharanaoya
 		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
@@ -39,26 +75,27 @@ func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // コントローラ関数
-// それぞれのAPIに対応した関数。
-// モデル関数で定義した構造体の呼び出し、JSONの変換処理等を行う。
-// DBのアクセス関数、レシーバメソッド、複雑になるロジックはモデル関数に定義する。
 
 // スレッド一覧取得
-func getThreads() {
+func getThreads(page, perPage string) *models.ThreadsAndPagination {
 	fmt.Println("スレッド一覧取得処理")
+	return models.GetThreadsSql(page, perPage)
 }
 
 // スレッド作成
-func postThread() {
+func postThread(accessToken, threadTitle, categoryId string) *models.ThreadAndUser {
 	fmt.Println("スレッド作成処理")
+	return models.PostThreadSql(accessToken, threadTitle, categoryId)
 }
 
 // スレッド取得
-func getThreadById() {
+func getThreadById(id string) *models.ThreadAndComments {
 	fmt.Println("スレッド取得処理")
+	return models.GetThreadByIdSql(id)
 }
 
 // スレッドコメント作成
-func postThreadComments() {
+func postThreadComments(id, userId, sessionId, commentTitle string) *models.CommentAndThreadAndUser {
 	fmt.Println("スレッドコメント作成処理")
+	return models.PostCommentsSql(id, userId, sessionId, commentTitle)
 }

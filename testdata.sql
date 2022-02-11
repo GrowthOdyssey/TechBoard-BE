@@ -37,10 +37,10 @@ INSERT INTO thread_categories(name,created_at,updated_at) VALUES ('ポケモン'
 INSERT INTO thread_categories(name,created_at,updated_at) VALUES ('ウマ',current_timestamp,current_timestamp);
 
 --スレッドデータ
-INSERT INTO threads(title,thread_category_id,user_id,created_at,updated_at) VALUES ('JavaScriptとJavaの違い',1,1,current_timestamp,current_timestamp);
-INSERT INTO threads(title,thread_category_id,user_id,created_at,updated_at) VALUES ('Goと60の違い',2,2,current_timestamp,current_timestamp);
-INSERT INTO threads(title,thread_category_id,user_id,created_at,updated_at) VALUES ('ライチュウとデデンネの違い',3,4,current_timestamp,current_timestamp);
-INSERT INTO threads(title,thread_category_id,user_id,created_at,updated_at) VALUES ('馬とUMAの違い',4,5,current_timestamp,current_timestamp);
+INSERT INTO threads(user_id,thread_category_id,title,created_at,updated_at) VALUES (1,1,'JavaScriptとJavaの違い',current_timestamp,current_timestamp);
+INSERT INTO threads(user_id,thread_category_id,title,created_at,updated_at) VALUES (2,2,'Goと60の違い',current_timestamp,current_timestamp);
+INSERT INTO threads(user_id,thread_category_id,title,created_at,updated_at) VALUES (4,3,'ライチュウとデデンネの違い',current_timestamp,current_timestamp);
+INSERT INTO threads(user_id,thread_category_id,title,created_at,updated_at) VALUES (5,4,'馬とUMAの違い',current_timestamp,current_timestamp);
 
 
 --コメントデータ
