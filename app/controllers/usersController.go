@@ -1,8 +1,11 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/GrowthOdyssey/TechBoard-BE/app/models"
 )
 
 // ハンドラ関数
@@ -13,7 +16,7 @@ import (
 func usersSignUpHandler(w http.ResponseWriter, r *http.Request) {
 	allowCors(w)
 	if r.Method == http.MethodPost {
-		usersSignUp()
+		usersSignUp(w, r)
 	} else {
 		// TODO aiharanaoya
 		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
@@ -51,8 +54,38 @@ func usersLogoutHandler(w http.ResponseWriter, r *http.Request) {
 // DBのアクセス関数、レシーバメソッド、複雑になるロジックはモデル関数に定義する。
 
 // ユーザー登録
-func usersSignUp() {
-	fmt.Println("ユーザー登録処理")
+func usersSignUp(w http.ResponseWriter, r *http.Request) {
+	userSignUpReq := models.UserSignUpReq{}
+
+	err := json.NewDecoder(r.Body).Decode(&userSignUpReq)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// ユーザー登録する
+	userRes, err := userSignUpReq.RegisterUser()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// ユーザー登録後、そのままログインする
+	accessToken, err := models.Login(userRes.UserId)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// ログイン時生成したアクセストークンをレスポンスに加える
+	userRes.AccessToken = accessToken
+
+	// JSON変換
+	userResJson, err := json.Marshal(userRes)
+	if err != nil {
+			fmt.Println(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, string(userResJson))
 }
 
 // ログイン
