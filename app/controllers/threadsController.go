@@ -16,6 +16,8 @@ func threadsHandler(w http.ResponseWriter, r *http.Request) {
 		page := r.FormValue("page")
 		perPage := r.FormValue("perPage")
 		threads := getThreads(page, perPage)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
 		json.NewEncoder(w).Encode(threads)
 	case http.MethodPost:
 		accessToken := r.Header.Get("accessToken")
@@ -33,6 +35,8 @@ func threadsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		newThread := postThread(accessToken, reqBody.ThreadTitle, reqBody.CategoryId)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
 		json.NewEncoder(w).Encode(newThread)
 	default:
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -45,6 +49,8 @@ func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		thread := getThreadById(id)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
 		json.NewEncoder(w).Encode(thread)
 	// MEMO URLにcomments入っているか判定してハンドリングしたいかも
 	case http.MethodPost:
@@ -58,6 +64,8 @@ func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 		}
 		comment := postThreadComments(id, reqBody.UserId, reqBody.SessionId, reqBody.CommentTitle)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
 		json.NewEncoder(w).Encode(comment)
 	default:
 		// TODO aiharanaoya
