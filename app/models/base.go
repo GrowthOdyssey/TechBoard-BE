@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	"github.com/GrowthOdyssey/TechBoard-BE/config"
 	_ "github.com/lib/pq"
@@ -15,7 +16,11 @@ var err error
 // main.goでimportするとmain関数より前に呼ばれる
 func init() {
 	// 本番モードはsslmode=requireにする
-	connection := "user=test_user dbname=" + config.Config.DbName + " password=password sslmode=disable"
+	connection := os.Getenv("DATABASE_URL")
+	fmt.Println(connection, "yeah")
+	if connection == "" {
+		connection = "user=test_user dbname=" + config.Config.DbName + " password=password sslmode=disable"
+	}
 	Db, err = sql.Open(config.Config.SqlDriver, connection)
 
 	if err != nil {

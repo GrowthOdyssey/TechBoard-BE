@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/GrowthOdyssey/TechBoard-BE/config"
 )
@@ -34,7 +35,11 @@ func SetRouter() {
 
 // サーバーを起動する
 func StartServer() {
-	err := http.ListenAndServe(":" + config.Config.Port, nil)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = config.Config.Port
+	}
+	err := http.ListenAndServe(":"+port, nil)
 
 	if err != nil {
 		fmt.Println(err)
@@ -48,9 +53,9 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 
 		healthCheckRes, err := json.Marshal(healthCheck)
 		if err != nil {
-				fmt.Println(err)
+			fmt.Println(err)
 		}
-		
+
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprint(w, string(healthCheckRes))
 	} else {
