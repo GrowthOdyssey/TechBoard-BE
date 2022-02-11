@@ -10,11 +10,11 @@ delete from users;
 
 
 -- ユーザーデータ
-INSERT INTO users(user_id,name,email,password,created_at,updated_at) VALUES ('1','鈴木','test1@test.com','pass1234',current_timestamp,current_timestamp);
-INSERT INTO users(user_id,name,email,password,created_at,updated_at) VALUES ('2','田中','test2@test.com','pass1234',current_timestamp,current_timestamp);
-INSERT INTO users(user_id,name,email,password,created_at,updated_at) VALUES ('3','高橋','test3@test.com','pass1234',current_timestamp,current_timestamp);
-INSERT INTO users(user_id,name,email,password,created_at,updated_at) VALUES ('4','サトシ','test4@test.com','pass1234',current_timestamp,current_timestamp);
-INSERT INTO users(user_id,name,email,password,created_at,updated_at) VALUES ('5','ゴルシ','test5@test.com','pass1234',current_timestamp,current_timestamp);
+INSERT INTO users(user_id,name,password,created_at,updated_at) VALUES ('1','鈴木','pass1234',current_timestamp,current_timestamp);
+INSERT INTO users(user_id,name,password,created_at,updated_at) VALUES ('2','田中','pass1234',current_timestamp,current_timestamp);
+INSERT INTO users(user_id,name,password,created_at,updated_at) VALUES ('3','高橋','pass1234',current_timestamp,current_timestamp);
+INSERT INTO users(user_id,name,password,created_at,updated_at) VALUES ('4','サトシ','pass1234',current_timestamp,current_timestamp);
+INSERT INTO users(user_id,name,password,created_at,updated_at) VALUES ('5','ゴルシ','pass1234',current_timestamp,current_timestamp);
 
 
 -- ログインデータ

@@ -9,7 +9,6 @@ drop table users;
 create table users (
   user_id     varchar(20) primary key,
   name        varchar(100) not null,
-  email       varchar(100) not null unique,
   password    varchar(100) not null,
   avatar_id   varchar(20),
   created_at  timestamp not null,
@@ -18,7 +17,7 @@ create table users (
 
 -- ログイン
 create table logins (
-  uuid        char(64) primary key,
+  uuid        varchar(64) primary key,
   user_id     varchar(20) references users(user_id),
   created_at  timestamp not null
 );
