@@ -98,7 +98,7 @@ func getThreadById(id string) *models.ThreadAndComments {
 }
 
 // スレッドコメント作成
-func postThreadComments(id, userId, sessionId, commentTitle string) *models.CommentAndThreadAndUser {
+func postThreadComments(id, userId, sessionId, commentTitle string) *models.CommentAndUser {
 	fmt.Println("スレッドコメント作成処理")
 	return models.PostCommentsSql(id, userId, sessionId, commentTitle)
 }

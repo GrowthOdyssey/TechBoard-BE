@@ -30,11 +30,9 @@ type ThreadComment struct {
 }
 
 //コメント作成時
-type CommentAndThreadAndUser struct {
+type CommentAndUser struct {
 	Id        string    `json:"commentId"`
 	Text      string    `json:"commentTitle"`
-	ThreadId  string    `json:"threadId"`
-	UserId    string    `json:"userId"`
 	UserName  string    `json:"userName"`
 	SessionId string    `json:"sessionId"`
 	CreatedAt time.Time `json:"createdAt"`
@@ -81,7 +79,7 @@ func GetCommentsByThreadIdSql(threadId string, Db *sql.DB) (*[]ThreadComment, in
 }
 
 //コメント登録
-func PostCommentsSql(threadId, userId, sessionId, commentTitle string) *CommentAndThreadAndUser {
+func PostCommentsSql(threadId, userId, sessionId, commentTitle string) *CommentAndUser {
 	threadIdInt, threadIdErr := strconv.Atoi(threadId)
 	if threadIdErr != nil {
 		log.Fatal(threadIdErr)
@@ -115,22 +113,20 @@ func PostCommentsSql(threadId, userId, sessionId, commentTitle string) *CommentA
 
 	//作成したコメントとユーザー名取得
 	selectUserName :=
-		"SELECT thread_comments.id, text, thread_id, COALESCE(thread_comments.user_id,''), " +
+		"SELECT thread_comments.id, text, " +
 			"COALESCE(users.name,''), COALESCE(thread_comments.session_id,''), thread_comments.created_at " +
 			"FROM thread_comments LEFT JOIN users ON thread_comments.user_id = users.user_id " +
 			"where thread_comments.id = $1;"
-	var commentAndThreadAndUser CommentAndThreadAndUser
+	var commentAndUser CommentAndUser
 	selectUserNameErr := Db.QueryRow(selectUserName, newComment.Id).Scan(
-		&commentAndThreadAndUser.Id,
-		&commentAndThreadAndUser.Text,
-		&commentAndThreadAndUser.ThreadId,
-		&commentAndThreadAndUser.UserId,
-		&commentAndThreadAndUser.UserName,
-		&commentAndThreadAndUser.SessionId,
-		&commentAndThreadAndUser.CreatedAt,
+		&commentAndUser.Id,
+		&commentAndUser.Text,
+		&commentAndUser.UserName,
+		&commentAndUser.SessionId,
+		&commentAndUser.CreatedAt,
 	)
 	if selectUserNameErr != nil {
 		log.Fatalln(selectUserNameErr)
 	}
-	return &commentAndThreadAndUser
+	return &commentAndUser
 }
