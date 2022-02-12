@@ -31,6 +31,7 @@ func SetRouter() {
 	// スレッド
 	http.HandleFunc("/v1/threads", threadsHandler)
 	http.HandleFunc("/v1/threads/", threadsIdHandler)
+	http.HandleFunc("/v1/threads/categories", threadsCategoriesHandler)
 }
 
 // サーバーを起動する
@@ -68,6 +69,6 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 // CORS許可
 func allowCors(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Headers", "*")
-  w.Header().Set("Access-Control-Allow-Origin", "*")
-  w.Header().Set( "Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS" )
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 }

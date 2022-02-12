@@ -48,6 +48,12 @@ type ThreadAndComments struct {
 	CommentsCount    int              `json:"commentsCount"`
 }
 
+//スレッドカテゴリー一覧取得用
+type ThreadsCategory struct {
+	Id           string `json:"categoryId"`
+	CategoryName string `json:"categoryName"`
+}
+
 func (t *Thread) ThreadReceiver() {
 	fmt.Println(t.Id, t.Title)
 }
@@ -186,4 +192,26 @@ func GetThreadByIdSql(id string) *ThreadAndComments {
 		thread.UpdatedAt,
 		threadComments,
 		commentsCount}
+}
+
+//スレッドカテゴリー一覧取得
+func GetThreadsCategoriesSql() *[]ThreadsCategory {
+	selectCmd := "SELECT id, name FROM thread_categories;"
+	var threadsCategories []ThreadsCategory
+	rows, err := Db.Query(selectCmd)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var p ThreadsCategory
+		err := rows.Scan(
+			&p.Id,
+			&p.CategoryName)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		threadsCategories = append(threadsCategories, p)
+	}
+	return &threadsCategories
 }

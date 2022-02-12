@@ -77,6 +77,21 @@ func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// スレッドカテゴリーハンドラ（パスパラメータが存在する場合）
+func threadsCategoriesHandler(w http.ResponseWriter, r *http.Request) {
+	allowCors(w)
+	if r.Method == http.MethodGet {
+		categories := getThreadsCategories()
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		json.NewEncoder(w).Encode(categories)
+	} else {
+		// TODO aiharanaoya
+		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+}
+
 // コントローラ関数
 
 // スレッド一覧取得
@@ -101,4 +116,10 @@ func getThreadById(id string) *models.ThreadAndComments {
 func postThreadComments(id, userId, sessionId, commentTitle string) *models.CommentAndUser {
 	fmt.Println("スレッドコメント作成処理")
 	return models.PostCommentsSql(id, userId, sessionId, commentTitle)
+}
+
+// スレッドコメント作成
+func getThreadsCategories() *[]models.ThreadsCategory {
+	fmt.Println("スレッドカテゴリー一覧取得処理")
+	return models.GetThreadsCategoriesSql()
 }
