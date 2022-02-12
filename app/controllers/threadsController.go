@@ -14,9 +14,10 @@ func threadsHandler(w http.ResponseWriter, r *http.Request) {
 	allowCors(w)
 	switch r.Method {
 	case http.MethodGet:
+		categoryId := r.FormValue("categoryId")
 		page := r.FormValue("page")
 		perPage := r.FormValue("perPage")
-		threads := getThreads(page, perPage)
+		threads := getThreads(categoryId, page, perPage)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(200)
 		json.NewEncoder(w).Encode(threads)
@@ -79,9 +80,9 @@ func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
 // コントローラ関数
 
 // スレッド一覧取得
-func getThreads(page, perPage string) *models.ThreadsAndPagination {
+func getThreads(categoryId, page, perPage string) *models.ThreadsAndPagination {
 	fmt.Println("スレッド一覧取得処理")
-	return models.GetThreadsSql(page, perPage)
+	return models.GetThreadsSql(categoryId, page, perPage)
 }
 
 // スレッド作成

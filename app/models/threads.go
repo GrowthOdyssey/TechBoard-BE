@@ -15,6 +15,8 @@ type Thread struct {
 	Title            string    `json:"threadTitle"`
 	CreatedAt        time.Time `json:"createdAt"`
 	UpdatedAt        time.Time `json:"updatedAt"`
+	FirstComment     string    `json:"firstComment"`
+	CommentsCount    int       `json:"commentsCount"`
 }
 
 type Pagination struct {
@@ -23,11 +25,13 @@ type Pagination struct {
 	Total   int `json:"total"`
 }
 
+//スレッド一覧取得用
 type ThreadsAndPagination struct {
 	Threads    []Thread   `json:"threads"`
 	Pagination Pagination `json:"pagination"`
 }
 
+//スレッド作成用
 type ThreadAndUser struct {
 	Id               string    `json:"threadId"`
 	UserId           string    `json:"userId"`
@@ -38,6 +42,7 @@ type ThreadAndUser struct {
 	UserName         string    `json:"userName"`
 }
 
+//スレッド個別取得用
 type ThreadAndComments struct {
 	Id               string           `json:"threadId"`
 	UserId           string           `json:"userId"`
@@ -57,7 +62,12 @@ func SampleFunction(id string) {
 	fmt.Println(id)
 }
 
-func GetThreadsSql(page, perPage string) *ThreadsAndPagination {
+//スレッド一覧取得
+func GetThreadsSql(categoryId, page, perPage string) *ThreadsAndPagination {
+	categoryIdInt, categoryIdErr := strconv.Atoi(categoryId)
+	if categoryIdErr != nil {
+		categoryIdInt = 0
+	}
 	pageInt, pageErr := strconv.Atoi(page)
 	if pageErr != nil {
 		pageInt = 1
@@ -68,10 +78,37 @@ func GetThreadsSql(page, perPage string) *ThreadsAndPagination {
 	}
 	// DB接続
 
-	// スレッド一覧取得
+	// スレッド一覧取得 一番古いコメントを結合
 	var threads []Thread
-	selectCmd := "select * from threads;"
-	rows, _ := Db.Query(selectCmd)
+	selectCmd :=
+		"SELECT threads.*, COALESCE(oldest_comment.text,''), COALESCE(comments_count.count,0) " +
+			"FROM threads " +
+			"LEFT JOIN " +
+			"(SELECT * " +
+			"FROM thread_comments " +
+			"WHERE NOT EXISTS " +
+			"(SELECT 1 " +
+			"FROM thread_comments sub " +
+			"WHERE thread_comments.thread_id = sub.thread_id " +
+			"AND thread_comments.created_at > sub.created_at)) " +
+			"oldest_comment " +
+			"ON threads.id = oldest_comment.thread_id " +
+			"LEFT JOIN " +
+			"(SELECT count(*), thread_id " +
+			"FROM thread_comments " +
+			"GROUP BY thread_id) comments_count " +
+			"ON threads.id = comments_count.thread_id "
+	if categoryIdInt != 0 {
+		selectCmd += "WHERE thread_category_id = $1 "
+	} else {
+		selectCmd += "WHERE thread_category_id <> $1 "
+	}
+	selectCmd += "ORDER BY updated_at desc;"
+
+	stmt, _ := Db.Prepare(selectCmd)
+	defer stmt.Close()
+
+	rows, _ := stmt.Query(categoryIdInt)
 	defer rows.Close()
 	for rows.Next() {
 		var p Thread
@@ -81,35 +118,36 @@ func GetThreadsSql(page, perPage string) *ThreadsAndPagination {
 			&p.ThreadCategoryId,
 			&p.Title,
 			&p.CreatedAt,
-			&p.UpdatedAt)
+			&p.UpdatedAt,
+			&p.FirstComment,
+			&p.CommentsCount)
+
 		if err != nil {
 			log.Fatalln(err)
 		}
 		threads = append(threads, p)
 	}
 
-	/*
-		// スレッド総件数取得
-		selectCountCmd := "select count(*) from threads;"
-		var count int
-		err := Db.QueryRow(selectCountCmd).Scan(&count)
-		if err != nil {
-			log.Fatal(err)
-		}
-	*/
-
 	return &ThreadsAndPagination{threads, Pagination{pageInt, perPageInt, len(threads)}}
 }
 
+//スレッド作成
 func PostThreadSql(accessToken, threadTitle, categoryId string) *ThreadAndUser {
-	selectAccessTokenCmd := "select user_id from logins where uuid = $1;"
+	selectAccessTokenCmd :=
+		"SELECT user_id " +
+			"FROM logins " +
+			"WHERE uuid = $1;"
+
 	var userId string
 	selectAccessTokenErr := Db.QueryRow(selectAccessTokenCmd, accessToken).Scan(&userId)
 	if selectAccessTokenErr != nil {
 		log.Fatalln(selectAccessTokenErr)
 	}
 
-	insertCmd := "INSERT INTO threads (user_id,thread_category_id,title,created_at,updated_at) VALUES ($1,$2,$3,$4,$5) RETURNING *;"
+	//スレッド登録
+	insertCmd :=
+		"INSERT INTO threads (user_id,thread_category_id,title,created_at,updated_at) " +
+			"VALUES ($1,$2,$3,$4,$5) RETURNING *;"
 	categoryIdInt, categoryIdErr := strconv.Atoi(categoryId)
 	if categoryIdErr != nil {
 		categoryIdInt = 1
@@ -126,7 +164,11 @@ func PostThreadSql(accessToken, threadTitle, categoryId string) *ThreadAndUser {
 		log.Fatal(insertErr)
 	}
 
-	selectUserName := "select name from users where user_id = $1;"
+	//スレッドを登録したユーザー取得
+	selectUserName :=
+		"SELECT name " +
+			"FROM users " +
+			"where user_id = $1;"
 	var userName string
 	selectUserNameErr := Db.QueryRow(selectUserName, newThread.UserId).Scan(&userName)
 	if selectUserNameErr != nil {
@@ -143,8 +185,14 @@ func PostThreadSql(accessToken, threadTitle, categoryId string) *ThreadAndUser {
 		userName}
 }
 
+//スレッド個別取得
 func GetThreadByIdSql(id string) *ThreadAndComments {
-	selectThreadById := "select * from threads where id = $1;"
+
+	//スレッド取得
+	selectThreadById :=
+		"SELECT * " +
+			"from threads " +
+			"where id = $1;"
 	var thread Thread
 	selectThreadByIdErr := Db.QueryRow(selectThreadById, id).Scan(
 		&thread.Id,
@@ -156,16 +204,8 @@ func GetThreadByIdSql(id string) *ThreadAndComments {
 	if selectThreadByIdErr != nil {
 		log.Fatalln(selectThreadByIdErr)
 	}
-	threadComments, commentsCount := GetCommentsByThreadIdSql(id, Db)
 
-	/*
-		selectCountThreadComments := "select count(*) from thread_comments where thread_id = $1;"
-		var commentsCount int
-		err := Db.QueryRow(selectCountThreadComments, id).Scan(&commentsCount)
-		if err != nil {
-			log.Fatal(err)
-		}
-	*/
+	threadComments, commentsCount := GetCommentsByThreadIdSql(id, Db)
 
 	return &ThreadAndComments{
 		thread.Id,
