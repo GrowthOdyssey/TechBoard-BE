@@ -53,6 +53,9 @@ type ThreadsCategory struct {
 	Id           string `json:"categoryId"`
 	CategoryName string `json:"categoryName"`
 }
+type ThreadsCategories struct {
+	ThreadsCategories *[]ThreadsCategory `json:"categories"`
+}
 
 func (t *Thread) ThreadReceiver() {
 	fmt.Println(t.Id, t.Title)
@@ -195,7 +198,7 @@ func GetThreadByIdSql(id string) *ThreadAndComments {
 }
 
 //スレッドカテゴリー一覧取得
-func GetThreadsCategoriesSql() *[]ThreadsCategory {
+func GetThreadsCategoriesSql() *ThreadsCategories {
 	selectCmd := "SELECT id, name FROM thread_categories;"
 	var threadsCategories []ThreadsCategory
 	rows, err := Db.Query(selectCmd)
@@ -213,5 +216,5 @@ func GetThreadsCategoriesSql() *[]ThreadsCategory {
 		}
 		threadsCategories = append(threadsCategories, p)
 	}
-	return &threadsCategories
+	return &ThreadsCategories{&threadsCategories}
 }

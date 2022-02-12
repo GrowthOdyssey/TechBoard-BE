@@ -119,7 +119,7 @@ func postThreadComments(id, userId, sessionId, commentTitle string) *models.Comm
 }
 
 // スレッドコメント作成
-func getThreadsCategories() *[]models.ThreadsCategory {
+func getThreadsCategories() *models.ThreadsCategories {
 	fmt.Println("スレッドカテゴリー一覧取得処理")
 	return models.GetThreadsCategoriesSql()
 }
