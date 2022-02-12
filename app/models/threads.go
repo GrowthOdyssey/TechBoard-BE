@@ -32,14 +32,8 @@ type ThreadsAndPagination struct {
 }
 
 //スレッド作成用
-type ThreadAndUser struct {
-	Id               string    `json:"threadId"`
-	UserId           string    `json:"userId"`
-	ThreadCategoryId string    `json:"categoryId"`
-	Title            string    `json:"threadTitle"`
-	CreatedAt        time.Time `json:"createdAt"`
-	UpdatedAt        time.Time `json:"updatedAt"`
-	UserName         string    `json:"userName"`
+type NewThreadId struct {
+	ThreadId string `json:"threadId"`
 }
 
 //スレッド個別取得用
@@ -132,7 +126,7 @@ func GetThreadsSql(categoryId, page, perPage string) *ThreadsAndPagination {
 }
 
 //スレッド作成
-func PostThreadSql(accessToken, threadTitle, categoryId string) *ThreadAndUser {
+func PostThreadSql(accessToken, threadTitle, categoryId string) *NewThreadId {
 	selectAccessTokenCmd :=
 		"SELECT user_id " +
 			"FROM logins " +
@@ -147,42 +141,18 @@ func PostThreadSql(accessToken, threadTitle, categoryId string) *ThreadAndUser {
 	//スレッド登録
 	insertCmd :=
 		"INSERT INTO threads (user_id,thread_category_id,title,created_at,updated_at) " +
-			"VALUES ($1,$2,$3,$4,$5) RETURNING *;"
+			"VALUES ($1,$2,$3,$4,$5) RETURNING id;"
 	categoryIdInt, categoryIdErr := strconv.Atoi(categoryId)
 	if categoryIdErr != nil {
 		categoryIdInt = 1
 	}
-	var newThread Thread
+	var newThreadId NewThreadId
 	insertErr := Db.QueryRow(insertCmd, userId, categoryIdInt, threadTitle, time.Now(), time.Now()).Scan(
-		&newThread.Id,
-		&newThread.UserId,
-		&newThread.ThreadCategoryId,
-		&newThread.Title,
-		&newThread.CreatedAt,
-		&newThread.UpdatedAt)
+		&newThreadId.ThreadId)
 	if insertErr != nil {
 		log.Fatal(insertErr)
 	}
-
-	//スレッドを登録したユーザー取得
-	selectUserName :=
-		"SELECT name " +
-			"FROM users " +
-			"where user_id = $1;"
-	var userName string
-	selectUserNameErr := Db.QueryRow(selectUserName, newThread.UserId).Scan(&userName)
-	if selectUserNameErr != nil {
-		log.Fatalln(selectUserNameErr)
-	}
-
-	return &ThreadAndUser{
-		newThread.Id,
-		newThread.UserId,
-		newThread.ThreadCategoryId,
-		newThread.Title,
-		newThread.CreatedAt,
-		newThread.UpdatedAt,
-		userName}
+	return &newThreadId
 }
 
 //スレッド個別取得

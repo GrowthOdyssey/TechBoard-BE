@@ -36,10 +36,10 @@ func threadsHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 		}
 
-		newThread := postThread(accessToken, reqBody.ThreadTitle, reqBody.CategoryId)
+		newThreadId := postThread(accessToken, reqBody.ThreadTitle, reqBody.CategoryId)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(200)
-		json.NewEncoder(w).Encode(newThread)
+		json.NewEncoder(w).Encode(newThreadId)
 	default:
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
@@ -86,7 +86,7 @@ func getThreads(categoryId, page, perPage string) *models.ThreadsAndPagination {
 }
 
 // スレッド作成
-func postThread(accessToken, threadTitle, categoryId string) *models.ThreadAndUser {
+func postThread(accessToken, threadTitle, categoryId string) *models.NewThreadId {
 	fmt.Println("スレッド作成処理")
 	return models.PostThreadSql(accessToken, threadTitle, categoryId)
 }
