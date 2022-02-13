@@ -28,7 +28,7 @@ func usersSignUpHandler(w http.ResponseWriter, r *http.Request) {
 func usersLoginHandler(w http.ResponseWriter, r *http.Request) {
 	allowCors(w)
 	if r.Method == http.MethodPost {
-		usersLogin()
+		usersLogin(w, r)
 	} else {
 		// TODO aiharanaoya
 		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
@@ -84,13 +84,47 @@ func usersSignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 	fmt.Fprint(w, string(userResJson))
 }
 
 // ログイン
-func usersLogin() {
-	fmt.Println("ログイン処理")
+func usersLogin(w http.ResponseWriter, r *http.Request) {
+	userLoginReq := models.UserLoginReq{}
+
+	err := json.NewDecoder(r.Body).Decode(&userLoginReq)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	isOk, userRes, err := userLoginReq.CheckLogin()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if !isOk {
+		// TODO aiharanaoya 仮
+		http.Error(w, "ログイン失敗", http.StatusUnauthorized)
+		return
+	}
+
+	accessToken, err := models.Login(userLoginReq.UserId)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// ログイン時生成したアクセストークンをレスポンスに加える
+	userRes.AccessToken = accessToken
+
+	// JSON変換
+	userResJson, err := json.Marshal(userRes)
+	if err != nil {
+			fmt.Println(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	fmt.Fprint(w, string(userResJson))
 }
 
 // ログアウト

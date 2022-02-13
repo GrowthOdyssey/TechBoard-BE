@@ -30,6 +30,12 @@ type UserRes struct {
 	CreatedAt	string	`json:"createdAt"`
 }
 
+// ユーザーログインリクエスト構造体
+type UserLoginReq struct {
+	UserId	string	`json:"userId"`
+	Password	string	`json:"password"`
+}
+
 // public function
 
 // ユーザーを登録する
@@ -86,6 +92,30 @@ func Login(userId string) (accessToken string, err error) {
 	err = Db.QueryRow(cmd).Scan(&accessToken)
 
 	return accessToken, err
+}
+
+// ログインチェックをする
+func (u *UserLoginReq) CheckLogin() (isOk bool, userRes UserRes, err error) {
+	cmd := `
+		select user_id, name, avatar_id, created_at
+		from users
+		where user_id = $1 and password = $2
+	`
+
+	err = Db.QueryRow(cmd, u.UserId, encrypt(u.Password)).Scan(
+		&userRes.UserId,
+		&userRes.UserName,
+		&userRes.AvatarId,
+		&userRes.CreatedAt,
+	)
+
+	if err != nil || userRes.UserId == "" {
+		isOk = false
+	} else {
+		isOk = true
+	}
+
+	return isOk, userRes, err
 }
 
 // private function
