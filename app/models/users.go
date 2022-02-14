@@ -118,6 +118,19 @@ func (u *UserLoginReq) CheckLogin() (isOk bool, userRes UserRes, err error) {
 	return isOk, userRes, err
 }
 
+// ログアウトする
+func Logout(accessToken string) (err error) {
+	cmd := `
+		delete
+		from logins
+		where uuid = $1
+	`
+
+	_, err = Db.Exec(cmd, accessToken)
+
+	return err
+}
+
 // private function
 
 // 文字列を暗号化する

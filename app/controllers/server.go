@@ -22,7 +22,7 @@ func SetRouter() {
 	// ユーザー
 	http.HandleFunc("/v1/users", usersSignUpHandler)
 	http.HandleFunc("/v1/users/login", usersLoginHandler)
-	http.HandleFunc("/v1/users/logout/", usersLogoutHandler)
+	http.HandleFunc("/v1/users/logout", usersLogoutHandler)
 
 	// 記事
 	http.HandleFunc("/v1/articles", articlesHandler)
