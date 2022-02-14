@@ -14,9 +14,10 @@ func threadsHandler(w http.ResponseWriter, r *http.Request) {
 	allowCors(w)
 	switch r.Method {
 	case http.MethodGet:
+		categoryId := r.FormValue("categoryId")
 		page := r.FormValue("page")
 		perPage := r.FormValue("perPage")
-		threads := getThreads(page, perPage)
+		threads := getThreads(categoryId, page, perPage)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(200)
 		json.NewEncoder(w).Encode(threads)
@@ -35,10 +36,10 @@ func threadsHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 		}
 
-		newThread := postThread(accessToken, reqBody.ThreadTitle, reqBody.CategoryId)
+		newThreadId := postThread(accessToken, reqBody.ThreadTitle, reqBody.CategoryId)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(200)
-		json.NewEncoder(w).Encode(newThread)
+		json.NewEncoder(w).Encode(newThreadId)
 	default:
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
@@ -76,16 +77,31 @@ func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// スレッドカテゴリーハンドラ（パスパラメータが存在する場合）
+func threadsCategoriesHandler(w http.ResponseWriter, r *http.Request) {
+	allowCors(w)
+	if r.Method == http.MethodGet {
+		categories := getThreadsCategories()
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(200)
+		json.NewEncoder(w).Encode(categories)
+	} else {
+		// TODO aiharanaoya
+		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+}
+
 // コントローラ関数
 
 // スレッド一覧取得
-func getThreads(page, perPage string) *models.ThreadsAndPagination {
+func getThreads(categoryId, page, perPage string) *models.ThreadsAndPagination {
 	fmt.Println("スレッド一覧取得処理")
-	return models.GetThreadsSql(page, perPage)
+	return models.GetThreadsSql(categoryId, page, perPage)
 }
 
 // スレッド作成
-func postThread(accessToken, threadTitle, categoryId string) *models.ThreadAndUser {
+func postThread(accessToken, threadTitle, categoryId string) *models.NewThreadId {
 	fmt.Println("スレッド作成処理")
 	return models.PostThreadSql(accessToken, threadTitle, categoryId)
 }
@@ -97,7 +113,13 @@ func getThreadById(id string) *models.ThreadAndComments {
 }
 
 // スレッドコメント作成
-func postThreadComments(id, userId, sessionId, commentTitle string) *models.CommentAndThreadAndUser {
+func postThreadComments(id, userId, sessionId, commentTitle string) *models.CommentAndUser {
 	fmt.Println("スレッドコメント作成処理")
 	return models.PostCommentsSql(id, userId, sessionId, commentTitle)
+}
+
+// スレッドコメント作成
+func getThreadsCategories() *models.ThreadsCategories {
+	fmt.Println("スレッドカテゴリー一覧取得処理")
+	return models.GetThreadsCategoriesSql()
 }

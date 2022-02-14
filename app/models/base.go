@@ -17,7 +17,6 @@ var err error
 func init() {
 	// 本番モードはsslmode=requireにする
 	connection := os.Getenv("DATABASE_URL")
-	fmt.Println(connection, "yeah")
 	if connection == "" {
 		connection = "user=test_user dbname=" + config.Config.DbName + " password=password sslmode=disable"
 	}
