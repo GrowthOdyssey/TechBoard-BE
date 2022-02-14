@@ -40,7 +40,7 @@ func usersLoginHandler(w http.ResponseWriter, r *http.Request) {
 func usersLogoutHandler(w http.ResponseWriter, r *http.Request) {
 	allowCors(w)
 	if r.Method == http.MethodDelete {
-		usersLogout()
+		usersLogout(w, r)
 	} else {
 		// TODO aiharanaoya
 		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
@@ -128,6 +128,18 @@ func usersLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 // ログアウト
-func usersLogout() {
-	fmt.Println("ログアウト処理")
+func usersLogout(w http.ResponseWriter, r *http.Request) {
+	accessToken := r.Header.Get("accessToken")
+	if accessToken == "" {
+		// TODO aiharanaoya
+		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+
+	err := 	models.Logout(accessToken)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
