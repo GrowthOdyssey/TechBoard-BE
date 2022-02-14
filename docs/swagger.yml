@@ -151,6 +151,13 @@ paths:
       summary: 記事一覧取得
       description: 記事一覧を取得する
       parameters:
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: string
+            description: ユーザーID
+            example: "1"
         - name: page
           in: query
           required: true
@@ -650,8 +657,8 @@ components:
             required:
               - articleId
               - articleTitle
-              - userId
               - userName
+              - avatarId
               - createdAt
               - updatedAt
             properties:
@@ -663,14 +670,14 @@ components:
                 type: string
                 description: 記事名
                 example: 記事名
-              userId:
-                type: string
-                description: ユーザーID
-                example: userId
               userName:
                 type: string
                 description: ニックネーム
                 example: ニックネーム
+              avatarId:
+                type: string
+                description: アバターID
+                example: "1"
               createdAt:
                 type: string
                 description: 作成日時
@@ -704,61 +711,26 @@ components:
       type: object
       required:
         - articleTitle
-        - description
-        - userId
+        - content
       properties:
         articleTitle:
           type: string
           description: 記事タイトル
           example: 記事タイトル
-        description:
+        content:
           type: string
           description: 記事内容
           example: 記事内容
-        userId:
-          type: string
-          description: ユーザーID
-          example: userId
 
     articlesPostResponse:
       type: object
       required:
         - articleId
-        - articleTitle
-        - description
-        - userId
-        - userName
-        - createdAt
-        - updatedAt
       properties:
         articleId:
           type: string
           description: 記事ID
           example: "1"
-        articleTitle:
-          type: string
-          description: 記事タイトル
-          example: 記事タイトル
-        description:
-          type: string
-          description: 記事内容
-          example: 記事内容
-        userId:
-          type: string
-          description: ユーザーID
-          example: userId
-        userName:
-          type: string
-          description: ニックネーム
-          example: ニックネーム
-        createdAt:
-          type: string
-          description: 作成日時
-          example: "2022-01-01T00:00:00+09:00"
-        updatedAt:
-          type: string
-          description: 更新日時
-          example: "2022-01-01T00:00:00+09:00"
 
     articlesGetResponse:
       type: object
@@ -766,9 +738,9 @@ components:
       required:
         - articleId
         - articleTitle
-        - description
-        - userId
+        - content
         - userName
+        - avatarId
         - createdAt
         - updatedAt
       properties:
@@ -780,18 +752,18 @@ components:
           type: string
           description: 記事タイトル
           example: 記事タイトル
-        description:
+        content:
           type: string
           description: 記事内容
           example: 記事内容
-        userId:
-          type: string
-          description: ユーザーID
-          example: userId
         userName:
           type: string
           description: ニックネーム
           example: ニックネーム
+        avatarId:
+          type: string
+          description: アバターID
+          example: "1"
         createdAt:
           type: string
           description: 作成日時
@@ -806,11 +778,7 @@ components:
       required:
         - articleId
         - articleTitle
-        - description
-        - userId
-        - userName
-        - createdAt
-        - updatedAt
+        - content
       properties:
         articleId:
           type: string
@@ -820,58 +788,20 @@ components:
           type: string
           description: 記事タイトル
           example: 記事タイトル
-        description:
+        content:
           type: string
           description: 記事内容
           example: 記事内容
-        userId:
-          type: string
-          description: ユーザーID
-          example: userId
-        userName:
-          type: string
-          description: ニックネーム
-          example: ニックネーム
-        createdAt:
-          type: string
-          description: 作成日時
-          example: "2022-01-01T00:00:00+09:00"
-        updatedAt:
-          type: string
-          description: 更新日時
-          example: "2022-01-01T00:00:00+09:00"
 
     articlesPutResponse:
       type: object
       required:
         - articleId
-        - articleTitle
-        - description
-        - userId
-        - userName
-        - createdAt
-        - updatedAt
       properties:
         articleId:
           type: string
           description: 記事ID
           example: "1"
-        articleTitle:
-          type: string
-          description: 記事タイトル
-          example: 記事タイトル
-        description:
-          type: string
-          description: 記事内容
-          example: 記事内容
-        createdAt:
-          type: string
-          description: 作成日時
-          format: date-time
-        updatedAt:
-          type: string
-          description: 作成日時
-          format: date-time
 
     threadsListGetResponse:
       type: object
@@ -902,6 +832,14 @@ components:
                 type: string
                 description: カテゴリID
                 example: "1"
+              firstComment:
+                type: string
+                description: 最初のコメント
+                example: "コメント"
+              commentsCount:
+                type: integer
+                description: コメント数
+                example: 1
               createdAt:
                 type: string
                 description: 作成日時
@@ -952,39 +890,11 @@ components:
       description: スレッド作成レスポンス
       required:
         - threadId
-        - threadTitle
-        - categoryId
-        - createdAt
-        - updatedAt
       properties:
         threadId:
           type: string
           description: スレッドID
           example: "1"
-        threadTitle:
-          type: string
-          description: スレッドタイトル
-          example: スレッドタイトル
-        categoryId:
-          type: string
-          description: カテゴリID
-          example: "1"
-        userId:
-          type: string
-          description: ユーザーID
-          example: userId
-        userName:
-          type: string
-          description: ニックネーム
-          example: ニックネーム
-        createdAt:
-          type: string
-          description: 作成日時
-          example: "2022-01-01T00:00:00+09:00"
-        updatedAt:
-          type: string
-          format: date-time
-          example: "2022-01-01T00:00:00+09:00"
 
     threadsGetResponse:
       type: object
@@ -1033,10 +943,6 @@ components:
                 type: string
                 description: コメントタイトル
                 example: コメント
-              userId:
-                type: string
-                description: ユーザーID（コメント投稿者）
-                example: "1"
               userName:
                 type: string
                 description: ニックネーム（コメント投稿者）
@@ -1083,8 +989,6 @@ components:
       required:
         - commentId
         - commentTitle
-        - threadId
-        - threadTitle
         - createdAt
       properties:
         commentId:
@@ -1095,18 +999,6 @@ components:
           type: string
           description: コメントタイトル
           example: コメント
-        threadId:
-          type: string
-          description: スレッドID
-          example: "1"
-        threadTitle:
-          type: string
-          description: スレッドタイトル
-          example: スレッドタイトル
-        userId:
-          type: string
-          description: ユーザーID（コメント投稿者）
-          example: "1"
         userName:
           type: string
           description: ニックネーム（コメント投稿者）

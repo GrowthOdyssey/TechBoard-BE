@@ -27,7 +27,7 @@ create table articles (
   id          serial primary key,
   user_id     varchar(20) references users(user_id),
   title       varchar(100) not null,
-  description varchar(2000) not null,
+  content varchar(2000) not null,
   created_at  timestamp not null,
   updated_at  timestamp not null
 );
