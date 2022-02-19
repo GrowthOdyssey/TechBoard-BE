@@ -15,9 +15,12 @@ import (
 // ユーザー登録ハンドラ
 func usersSignUpHandler(w http.ResponseWriter, r *http.Request) {
 	allowCors(w)
-	if r.Method == http.MethodPost {
+	switch r.Method {
+	case http.MethodOptions:
+		w.WriteHeader(http.StatusOK)
+	case http.MethodPost:
 		usersSignUp(w, r)
-	} else {
+	default:
 		// TODO aiharanaoya
 		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -27,9 +30,12 @@ func usersSignUpHandler(w http.ResponseWriter, r *http.Request) {
 // ログインハンドラ
 func usersLoginHandler(w http.ResponseWriter, r *http.Request) {
 	allowCors(w)
-	if r.Method == http.MethodPost {
+	switch r.Method {
+	case http.MethodOptions:
+		w.WriteHeader(http.StatusOK)
+	case http.MethodPost:
 		usersLogin(w, r)
-	} else {
+	default:
 		// TODO aiharanaoya
 		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -38,10 +44,13 @@ func usersLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 // ログアウトハンドラ
 func usersLogoutHandler(w http.ResponseWriter, r *http.Request) {
-	allowCors(w)
-	if r.Method == http.MethodDelete {
+	allowCors(w)StatusOK
+	switch r.Method {
+	case http.MethodOptions:
+		w.WriteHeader(http.StatusOK)
+	case http.MethodDelete:
 		usersLogout(w, r)
-	} else {
+	default:
 		// TODO aiharanaoya
 		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
