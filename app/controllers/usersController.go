@@ -44,7 +44,7 @@ func usersLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 // ログアウトハンドラ
 func usersLogoutHandler(w http.ResponseWriter, r *http.Request) {
-	allowCors(w)StatusOK
+	allowCors(w)
 	switch r.Method {
 	case http.MethodOptions:
 		w.WriteHeader(http.StatusOK)
