@@ -55,7 +55,7 @@ func GetCommentsByThreadIdSql(threadId string, Db *sql.DB) (*[]ThreadComment, in
 			"FROM thread_comments LEFT JOIN users ON thread_comments.user_id = users.user_id " +
 			"WHERE thread_id = $1;")
 	defer stmt.Close()
-	var comments []ThreadComment
+	comments := []ThreadComment{}
 	rows, err := stmt.Query(threadId)
 	if err != nil {
 		log.Fatalln(err)
