@@ -48,7 +48,7 @@ func threadsHandler(w http.ResponseWriter, r *http.Request) {
 // スレッドハンドラ（パスパラメータが存在する場合）
 func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
 	allowCors(w)
-	id := strings.TrimPrefix(r.URL.Path, "/v1/threads/")
+	id := strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/v1/threads/"), "/comments")
 	switch r.Method {
 	case http.MethodGet:
 		thread := getThreadById(id)
