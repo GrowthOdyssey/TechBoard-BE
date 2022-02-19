@@ -30,7 +30,7 @@ func LoadConfig() {
 	}
 
 	Config = ConfigList{
-		Port:      config.Section("server").Key("port").MustString("8080"),
+		Port:      config.Section("server").Key("port").MustString("7280"),
 		SqlDriver: config.Section("db").Key("driver").String(),
 		DbName:    config.Section("db").Key("name").String(),
 	}
