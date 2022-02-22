@@ -69,6 +69,7 @@ func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		
 		comment := postThreadComments(id, reqBody.UserId, reqBody.SessionId, reqBody.CommentTitle)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(200)

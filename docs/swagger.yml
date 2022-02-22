@@ -63,7 +63,46 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/signupResponse"
+                $ref: "#/components/schemas/userResponse"
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response422"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response500"
+
+    get:
+      tags:
+        - User
+      summary: ユーザー情報取得
+      description: ユーザー情報を取得する。
+      parameters:
+        - name: accessToken
+          in: header
+          required: true
+          schema:
+            type: string
+            description: アクセストークン
+            example: "accessToken"
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/userResponse"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response400"
         422:
           description: Unprocessable Entity
           content:
@@ -94,7 +133,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/loginResponse"
+                $ref: "#/components/schemas/userResponse"
         400:
           description: Bad Request
           content:
@@ -568,9 +607,9 @@ components:
           description: アバターID
           example: "1"
 
-    signupResponse:
+    userResponse:
       type: object
-      description: ユーザー登録レスポンス
+      description: ユーザーレスポンス
       required:
         - userId
         - userName
@@ -613,36 +652,6 @@ components:
           type: string
           description: パスワード
           example: password
-
-    loginResponse:
-      type: object
-      description: ログインレスポンス
-      required:
-        - userId
-        - userName
-        - accessToken
-        - createdAt
-      properties:
-        userId:
-          type: string
-          description: ユーザーID
-          example: userId
-        userName:
-          type: string
-          description: ニックネーム
-          example: ニックネーム
-        avatarId:
-          type: string
-          description: アバターID
-          example: "1"
-        accessToken:
-          type: string
-          description: アクセストークン
-          example: "accessToken"
-        createdAt:
-          type: string
-          description: 作成日時
-          example: "2022-01-01T00:00:00+09:00"
 
     articlesListGetResponse:
       type: object
