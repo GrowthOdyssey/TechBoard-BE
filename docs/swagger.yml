@@ -15,7 +15,7 @@ tags:
     description: 掲示板
 
 servers:
-  - url: http://localhost:8080
+  - url: http://localhost:7280
     description: local server
   - url: http://127.0.0.1:4010
     description: mock server
