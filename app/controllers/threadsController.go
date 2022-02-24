@@ -218,6 +218,7 @@ func postThreadComments(w http.ResponseWriter, r *http.Request, threadId string)
 		w.WriteHeader(500)
 		json.NewEncoder(w).Encode(modelErr)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
