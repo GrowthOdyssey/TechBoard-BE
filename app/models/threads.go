@@ -7,6 +7,10 @@ import (
 	"time"
 )
 
+type ModelErrMsg struct {
+	ErrorMessage string `json:"message"`
+}
+
 // スレッド
 type Thread struct {
 	Id               string    `json:"threadId"`

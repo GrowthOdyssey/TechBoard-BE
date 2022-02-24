@@ -79,7 +79,7 @@ func GetCommentsByThreadIdSql(threadId string, Db *sql.DB) (*[]ThreadComment, in
 }
 
 //コメント登録
-func PostCommentsSql(threadId, userId, sessionId, commentTitle string) *CommentAndUser {
+func PostCommentsSql(threadId, userId, sessionId, commentTitle string) (*CommentAndUser, *ModelErrMsg) {
 	threadIdInt, threadIdErr := strconv.Atoi(threadId)
 	if threadIdErr != nil {
 		log.Fatal(threadIdErr)
@@ -91,6 +91,18 @@ func PostCommentsSql(threadId, userId, sessionId, commentTitle string) *CommentA
 			tx.Rollback()
 		}
 	}()
+	var commentsCount int
+	selectCountCmd :=
+		"SELECT (*) FROM thread_comments WHERE thread_id = $1;"
+	selectCountCmdErr := Db.QueryRow(selectCountCmd, threadId).Scan(commentsCount)
+	if selectCountCmdErr != nil {
+		return nil, &ModelErrMsg{"DBエラーが発生しました。"}
+	}
+	if commentsCount >= 1000 {
+		log.Fatal(selectCountCmdErr)
+		return nil, &ModelErrMsg{"このスレッドはコメントが1000件あるため追加できません"}
+	}
+
 	//コメント登録
 	insertCmd :=
 		"INSERT INTO thread_comments (user_id,thread_id,session_id,text,created_at,updated_at) " +
@@ -107,6 +119,7 @@ func PostCommentsSql(threadId, userId, sessionId, commentTitle string) *CommentA
 	if insertErr != nil {
 		log.Fatal(insertErr)
 		tx.Rollback()
+		return nil, &ModelErrMsg{"DBエラーが発生しました。"}
 	}
 
 	//親スレッドのupdated_at更新
@@ -120,10 +133,12 @@ func PostCommentsSql(threadId, userId, sessionId, commentTitle string) *CommentA
 	if updResultCount == 0 {
 		log.Fatalln("スレッドIDが存在しません")
 		tx.Rollback()
+		return nil, &ModelErrMsg{"DBエラーが発生しました。"}
 	}
 	if updExecErr != nil {
 		log.Fatalln(updExecErr)
 		tx.Rollback()
+		return nil, &ModelErrMsg{"DBエラーが発生しました。"}
 	}
 	tx.Commit()
 
@@ -143,6 +158,7 @@ func PostCommentsSql(threadId, userId, sessionId, commentTitle string) *CommentA
 	)
 	if selectUserNameErr != nil {
 		log.Fatalln(selectUserNameErr)
+		return nil, &ModelErrMsg{"DBエラーが発生しました。"}
 	}
-	return &commentAndUser
+	return &commentAndUser, nil
 }

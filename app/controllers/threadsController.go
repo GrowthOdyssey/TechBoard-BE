@@ -212,7 +212,13 @@ func postThreadComments(w http.ResponseWriter, r *http.Request, threadId string)
 		http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
 		return
 	}
-	comment := models.PostCommentsSql(threadId, reqBody.UserId, reqBody.SessionId, reqBody.CommentTitle)
+
+	comment, modelErr := models.PostCommentsSql(threadId, reqBody.UserId, reqBody.SessionId, reqBody.CommentTitle)
+	if modelErr != nil {
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(modelErr)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 	json.NewEncoder(w).Encode(comment)
