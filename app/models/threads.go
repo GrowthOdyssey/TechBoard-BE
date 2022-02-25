@@ -79,10 +79,22 @@ func GetThreadsSql(categoryId, page, perPage string) *ThreadsAndPagination {
 	if perPageErr != nil {
 		perPageInt = 20
 	}
-	// DB接続
 
+	offset := (pageInt * perPageInt) - perPageInt
 	// スレッド一覧取得 一番古いコメントを結合
-	var threads []Thread
+	var threadsCount int
+	selectCountCmd := "select count(*) from threads "
+	if categoryIdInt != 0 {
+		selectCountCmd += "WHERE thread_category_id = $1;"
+	} else {
+		selectCountCmd += "WHERE thread_category_id <> $1;"
+	}
+	selectCountErr := Db.QueryRow(selectCountCmd, categoryIdInt).Scan(&threadsCount)
+	if selectCountErr != nil {
+		log.Fatalln(selectCountErr)
+	}
+
+	threads := []Thread{}
 	selectCmd :=
 		"SELECT threads.*, COALESCE(oldest_comment.text,''), COALESCE(comments_count.count,0) " +
 			"FROM threads " +
@@ -106,12 +118,12 @@ func GetThreadsSql(categoryId, page, perPage string) *ThreadsAndPagination {
 	} else {
 		selectCmd += "WHERE thread_category_id <> $1 "
 	}
-	selectCmd += "ORDER BY updated_at desc;"
+	selectCmd += "ORDER BY updated_at desc LIMIT $2 OFFSET $3;"
 
 	stmt, _ := Db.Prepare(selectCmd)
 	defer stmt.Close()
 
-	rows, _ := stmt.Query(categoryIdInt)
+	rows, _ := stmt.Query(categoryIdInt, perPageInt, offset)
 	defer rows.Close()
 	for rows.Next() {
 		var p Thread
@@ -131,7 +143,7 @@ func GetThreadsSql(categoryId, page, perPage string) *ThreadsAndPagination {
 		threads = append(threads, p)
 	}
 
-	return &ThreadsAndPagination{threads, Pagination{pageInt, perPageInt, len(threads)}}
+	return &ThreadsAndPagination{threads, Pagination{pageInt, perPageInt, threadsCount}}
 }
 
 //スレッド作成
