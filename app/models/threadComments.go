@@ -8,6 +8,10 @@ import (
 	"time"
 )
 
+type ModelErrMsg struct {
+	ErrorMessage string `json:"message"`
+}
+
 // スレッドコメント
 type Comment struct {
 	Id        string    `json:"id"`
