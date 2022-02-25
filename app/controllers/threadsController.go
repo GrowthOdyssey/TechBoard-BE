@@ -174,8 +174,6 @@ func postThreadComments(w http.ResponseWriter, r *http.Request, threadId string)
 	var errMsgAndErrors struct {
 		ErrMessage string `json:"message"`
 		Errors     struct {
-			UserId       string `json:"userId"`
-			SessionId    string `json:"sessionId"`
 			CommentTitle string `json:"commentTitle"`
 		} `json:"errors"`
 	}
@@ -189,13 +187,11 @@ func postThreadComments(w http.ResponseWriter, r *http.Request, threadId string)
 		fmt.Println(err)
 	}
 	if reqBody.UserId == "" && reqBody.SessionId == "" {
-		errMsgAndErrors.Errors.UserId = "userIdを入力してください"
-		errMsgAndErrors.Errors.SessionId = "sessionIdを入力してください"
+		err400(w, "userIdとsessionIdどちらもありません")
+		return
 	}
 	if reqBody.CommentTitle == "" {
 		errMsgAndErrors.Errors.CommentTitle = "commentTitleを入力してください"
-	}
-	if errMsgAndErrors.Errors.UserId+errMsgAndErrors.Errors.SessionId+errMsgAndErrors.Errors.CommentTitle != "" {
 		errMsgAndErrors.ErrMessage = "値が不正です"
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(422)
