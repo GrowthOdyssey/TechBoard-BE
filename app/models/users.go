@@ -38,6 +38,41 @@ type UserLoginReq struct {
 
 // public function
 
+// ユーザーを取得する
+func GetUser(accessToken string) (userRes UserRes, err error) {
+	userRes.AccessToken = accessToken
+
+	// アクセストークンからユーザーIDを取得する
+	cmd := `
+		select user_id
+		from logins
+		where uuid = $1
+		limit 1
+	`
+
+	err = Db.QueryRow(cmd, accessToken).Scan(
+		&userRes.UserId,
+	)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// ユーザーIDからユーザーを取得する
+	cmd = `
+		select name, avatar_id, created_at
+		from users
+		where user_id = $1
+	`
+
+	err = Db.QueryRow(cmd, userRes.UserId).Scan(
+		&userRes.UserName,
+		&userRes.AvatarId,
+		&userRes.CreatedAt,
+	)
+
+	return userRes, err
+}
+
 // ユーザーを登録する
 func (u *UserSignUpReq) RegisterUser() (userRes UserRes, err error) {
 	cmd := `
