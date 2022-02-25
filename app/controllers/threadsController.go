@@ -115,14 +115,17 @@ func postThread(w http.ResponseWriter, r *http.Request) {
 	var errMsgAndErrors struct {
 		ErrMessage string `json:"message"`
 		Errors     struct {
-			AccessToken string `json:"accessToken"`
 			ThreadTitle string `json:"threadTitle"`
 			CategoryId  string `json:"categoryId"`
 		} `json:"errors"`
 	}
 	accessToken := r.Header.Get("accessToken")
 	if accessToken == "" {
-		errMsgAndErrors.Errors.AccessToken = "accessTokenがありません"
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(401)
+		json.NewEncoder(w).Encode(ErrMsg{"accessTokenがありません"})
+		http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		return
 	}
 
 	var reqBody struct {
@@ -141,7 +144,7 @@ func postThread(w http.ResponseWriter, r *http.Request) {
 	} else if regexp.MustCompile(`[^0-9]`).Match([]byte(reqBody.CategoryId)) {
 		errMsgAndErrors.Errors.CategoryId = "categoryIdは数字で指定してください"
 	}
-	if errMsgAndErrors.Errors.AccessToken+errMsgAndErrors.Errors.ThreadTitle+errMsgAndErrors.Errors.CategoryId != "" {
+	if errMsgAndErrors.Errors.ThreadTitle+errMsgAndErrors.Errors.CategoryId != "" {
 		errMsgAndErrors.ErrMessage = "値が不正です"
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(422)
