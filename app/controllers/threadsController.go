@@ -14,6 +14,13 @@ type ErrMsg struct {
 	ErrorMessage string `json:"message"`
 }
 
+func err400(w http.ResponseWriter, msg string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+	json.NewEncoder(w).Encode(ErrMsg{msg})
+	http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+}
+
 // スレッドハンドラ
 func threadsHandler(w http.ResponseWriter, r *http.Request) {
 	allowCors(w)
@@ -35,15 +42,9 @@ func threadsIdHandler(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/v1/threads/"), "/comments")
 	switch {
 	case id == "":
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(400)
-		json.NewEncoder(w).Encode(ErrMsg{"パスにIDがありません"})
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		err400(w, "パスにIDがありません")
 	case regexp.MustCompile(`[^0-9]`).Match([]byte(id)):
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(400)
-		json.NewEncoder(w).Encode(ErrMsg{"パスは数字で指定してください"})
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		err400(w, "パスは数字で指定してください")
 	default:
 		switch r.Method {
 		case http.MethodGet:
@@ -81,40 +82,27 @@ func threadsCategoriesHandler(w http.ResponseWriter, r *http.Request) {
 // スレッド一覧取得
 func getThreads(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("スレッド一覧取得処理")
-	var errMsgAndErrors struct {
-		ErrMessage string `json:"message"`
-		Errors     struct {
-			CategoryId string `json:"categoryId"`
-			Page       string `json:"page"`
-			PerPage    string `json:"perPage"`
-		} `json:"errors"`
-	}
 	categoryId := r.FormValue("categoryId")
 	if regexp.MustCompile(`[^0-9]`).Match([]byte(categoryId)) {
-		errMsgAndErrors.Errors.CategoryId = "categoryIdは数字で指定してください"
+		err400(w, "categoryIdは数字で指定してください")
+		return
 	}
 	page := r.FormValue("page")
 	if page == "" {
-		errMsgAndErrors.Errors.Page = "pageを指定してください"
+		err400(w, "pageを指定してください")
+		return
 	} else if regexp.MustCompile(`[^0-9]`).Match([]byte(page)) {
-		errMsgAndErrors.Errors.Page = "pageは数字で指定してください"
+		err400(w, "pageは数字で指定してください")
+		return
 	}
 	perPage := r.FormValue("perPage")
 	if perPage == "" {
-		errMsgAndErrors.Errors.PerPage = "perPageを指定してください"
+		err400(w, "perPageを指定してください")
+		return
 	} else if regexp.MustCompile(`[^0-9]`).Match([]byte(perPage)) {
-		errMsgAndErrors.Errors.PerPage = "perPageは数字で指定してください"
-	}
-
-	if errMsgAndErrors.Errors.CategoryId+errMsgAndErrors.Errors.Page+errMsgAndErrors.Errors.PerPage != "" {
-		errMsgAndErrors.ErrMessage = "値が不正です"
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(422)
-		json.NewEncoder(w).Encode(errMsgAndErrors)
-		http.Error(w, http.StatusText(http.StatusUnprocessableEntity), http.StatusUnprocessableEntity)
+		err400(w, "perPageは数字で指定してください")
 		return
 	}
-
 	threads := models.GetThreadsSql(categoryId, page, perPage)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
