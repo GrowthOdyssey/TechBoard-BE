@@ -85,12 +85,6 @@ func PostCommentsSql(threadId, userId, sessionId, commentTitle string) (*Comment
 		log.Fatal(threadIdErr)
 	}
 
-	tx, _ := Db.Begin()
-	defer func() {
-		if recover() != nil {
-			tx.Rollback()
-		}
-	}()
 	var commentsCount int
 	selectCountCmd :=
 		"SELECT count(*) FROM thread_comments WHERE thread_id = $1;"
@@ -101,6 +95,13 @@ func PostCommentsSql(threadId, userId, sessionId, commentTitle string) (*Comment
 	if commentsCount >= 1000 {
 		return nil, &ModelErrMsg{"このスレッドはコメントが1000件あるため追加できません"}
 	}
+
+	tx, _ := Db.Begin()
+	defer func() {
+		if recover() != nil {
+			tx.Rollback()
+		}
+	}()
 
 	//コメント登録
 	insertCmd :=
