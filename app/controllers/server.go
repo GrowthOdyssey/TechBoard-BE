@@ -6,12 +6,18 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/GrowthOdyssey/TechBoard-BE/app/constants"
 	"github.com/GrowthOdyssey/TechBoard-BE/config"
 )
 
 // ヘルスチェック構造体
 type HealthCheck struct {
 	Status string `json:"status"`
+}
+
+// 共通エラー構造体
+type CommonError struct {
+	Message string `json:"message"`
 }
 
 // ルーティング設定
@@ -60,9 +66,7 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprint(w, string(healthCheckRes))
 	} else {
-		// TODO aiharanaoya
-		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		ResponseCommonError(w, http.StatusNotFound, constants.NotFoundMessage)
 	}
 }
 
@@ -71,4 +75,18 @@ func allowCors(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Headers", "*")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+}
+
+// 共通エラーレスポンス
+func ResponseCommonError(w http.ResponseWriter, statusCode int, message string) {
+	error := CommonError{Message: message}
+
+	errorRes, err := json.Marshal(error)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	fmt.Fprint(w, string(errorRes))
 }

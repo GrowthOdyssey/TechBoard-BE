@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/GrowthOdyssey/TechBoard-BE/app/constants"
 	"github.com/GrowthOdyssey/TechBoard-BE/app/models"
 )
 
@@ -23,9 +24,7 @@ func usersHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		usersSignUp(w, r)
 	default:
-		// TODO aiharanaoya
-		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		ResponseCommonError(w, http.StatusNotFound, constants.NotFoundMessage)
 	}
 }
 
@@ -38,9 +37,7 @@ func usersLoginHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		usersLogin(w, r)
 	default:
-		// TODO aiharanaoya
-		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		ResponseCommonError(w, http.StatusNotFound, constants.NotFoundMessage)
 	}
 }
 
@@ -53,9 +50,7 @@ func usersLogoutHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodDelete:
 		usersLogout(w, r)
 	default:
-		// TODO aiharanaoya
-		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		ResponseCommonError(w, http.StatusNotFound, constants.NotFoundMessage)
 	}
 }
 
@@ -67,10 +62,10 @@ func usersLogoutHandler(w http.ResponseWriter, r *http.Request) {
 func getUser(w http.ResponseWriter, r *http.Request) {
 	accessToken := r.Header.Get("accessToken")
 	if accessToken == "" {
-		// TODO aiharanaoya
-		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		ResponseCommonError(w, http.StatusNotFound, constants.UnauthorizedMessage)
 	}
+
+	// トークンチェック
 
 	userRes, err := models.GetUser(accessToken)
 	if err != nil {
@@ -137,9 +132,9 @@ func usersLogin(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
+	// ログイン失敗時は401エラー
 	if !isOk {
-		// TODO aiharanaoya 仮
-		http.Error(w, "ログイン失敗", http.StatusUnauthorized)
+		ResponseCommonError(w, http.StatusUnauthorized, constants.LoginErrorMessage)
 		return
 	}
 
@@ -166,10 +161,10 @@ func usersLogin(w http.ResponseWriter, r *http.Request) {
 func usersLogout(w http.ResponseWriter, r *http.Request) {
 	accessToken := r.Header.Get("accessToken")
 	if accessToken == "" {
-		// TODO aiharanaoya
-		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		ResponseCommonError(w, http.StatusNotFound, constants.UnauthorizedMessage)
 	}
+
+	// トークンチェック
 
 	err := 	models.Logout(accessToken)
 	if err != nil {
@@ -177,4 +172,17 @@ func usersLogout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// アクセストークンからログインされているかチェックする
+// ログインされていなかったら401エラーを返す
+func AuthorizationCheck(w http.ResponseWriter, accessToken string) {
+	isOk, err := models.CheckLoginByAccessToken(accessToken)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if err != nil || !isOk {
+		ResponseCommonError(w, http.StatusUnauthorized, constants.UnauthorizedMessage)
+	}
 }

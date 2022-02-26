@@ -38,6 +38,32 @@ type UserLoginReq struct {
 
 // public function
 
+// アクセストークンからログインチェックをする
+func CheckLoginByAccessToken(accessToken string) (isOk bool, err error) {
+	var userId string
+
+	// アクセストークンからユーザーIDを取得する
+	cmd := `
+		select user_id
+		from logins
+		where uuid = $1
+		limit 1
+	`
+
+	err = Db.QueryRow(cmd, accessToken).Scan(&userId)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if err != nil || userId == "" {
+		isOk = false
+	} else {
+		isOk = true
+	}
+
+	return isOk, err
+}
+
 // ユーザーを取得する
 func GetUser(accessToken string) (userRes UserRes, err error) {
 	userRes.AccessToken = accessToken
