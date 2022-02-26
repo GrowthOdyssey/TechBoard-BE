@@ -65,7 +65,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 		ResponseCommonError(w, http.StatusNotFound, constants.UnauthorizedMessage)
 	}
 
-	// トークンチェック
+	AuthorizationCheck(w, accessToken)
 
 	userRes, err := models.GetUser(accessToken)
 	if err != nil {
@@ -164,7 +164,7 @@ func usersLogout(w http.ResponseWriter, r *http.Request) {
 		ResponseCommonError(w, http.StatusNotFound, constants.UnauthorizedMessage)
 	}
 
-	// トークンチェック
+	AuthorizationCheck(w, accessToken)
 
 	err := 	models.Logout(accessToken)
 	if err != nil {
