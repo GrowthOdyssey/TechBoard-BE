@@ -65,7 +65,10 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 		ResponseCommonError(w, http.StatusNotFound, constants.UnauthorizedMessage)
 	}
 
-	AuthorizationCheck(w, accessToken)
+	isOk := AuthorizationCheck(w, accessToken)
+	if !isOk {
+		return
+	}
 
 	userRes, err := models.GetUser(accessToken)
 	if err != nil {
@@ -164,7 +167,10 @@ func usersLogout(w http.ResponseWriter, r *http.Request) {
 		ResponseCommonError(w, http.StatusNotFound, constants.UnauthorizedMessage)
 	}
 
-	AuthorizationCheck(w, accessToken)
+	isOk := AuthorizationCheck(w, accessToken)
+	if !isOk {
+		return
+	}
 
 	err := 	models.Logout(accessToken)
 	if err != nil {
@@ -176,7 +182,7 @@ func usersLogout(w http.ResponseWriter, r *http.Request) {
 
 // アクセストークンからログインされているかチェックする
 // ログインされていなかったら401エラーを返す
-func AuthorizationCheck(w http.ResponseWriter, accessToken string) {
+func AuthorizationCheck(w http.ResponseWriter, accessToken string) (isOk bool) {
 	isOk, err := models.CheckLoginByAccessToken(accessToken)
 	if err != nil {
 		fmt.Println(err)
@@ -185,4 +191,6 @@ func AuthorizationCheck(w http.ResponseWriter, accessToken string) {
 	if err != nil || !isOk {
 		ResponseCommonError(w, http.StatusUnauthorized, constants.UnauthorizedMessage)
 	}
+
+	return isOk
 }
