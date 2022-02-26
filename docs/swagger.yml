@@ -64,6 +64,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/userResponse"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response400"
         422:
           description: Unprocessable Entity
           content:

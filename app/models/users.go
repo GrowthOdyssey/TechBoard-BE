@@ -81,6 +81,7 @@ func GetUser(accessToken string) (userRes UserRes, err error) {
 	)
 	if err != nil {
 		fmt.Println(err)
+		return userRes, err
 	}
 
 	// ユーザーIDからユーザーを取得する
@@ -110,6 +111,7 @@ func (u *UserSignUpReq) RegisterUser() (userRes UserRes, err error) {
 		cmd, u.UserId, u.UserName, encrypt(u.Password), u.AvatarId, time.Now(), time.Now())
 	if err != nil {
 		fmt.Println(err)
+		return userRes, err
 	}
 
 	// 登録した最新レコードを取得する
@@ -140,6 +142,7 @@ func Login(userId string) (accessToken string, err error) {
 	_, err = Db.Exec(cmd, createUuid(), userId, time.Now())
 	if err != nil {
 		fmt.Println(err)
+		return accessToken, err
 	}
 
 	// 登録した最新レコードを取得する
