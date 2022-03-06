@@ -64,6 +64,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/userResponse"
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response400"
         422:
           description: Unprocessable Entity
           content:
@@ -97,12 +103,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/userResponse"
-        400:
-          description: Bad Request
+        401:
+          description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Response400"
+                $ref: "#/components/schemas/Response401"
         500:
           description: Internal Server Error
           content:
@@ -128,18 +134,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/userResponse"
-        400:
-          description: Bad Request
+        401:
+          description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Response400"
-        422:
-          description: Unprocessable Entity
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Response422"
+                $ref: "#/components/schemas/Response401"
         500:
           description: Internal Server Error
           content:
@@ -164,12 +164,12 @@ paths:
       responses:
         204:
           description: No Content
-        400:
-          description: Bad Request
+        401:
+          description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Response400"
+                $ref: "#/components/schemas/Response401"
         500:
           description: Internal Server Error
           content:
