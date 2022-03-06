@@ -23,10 +23,10 @@ INSERT INTO logins(uuid,user_id,created_at) VALUES ('tawletmqi23o','4',current_t
 INSERT INTO logins(uuid,user_id,created_at) VALUES ('ai32qmiotqww','5',current_timestamp);
 
 -- 記事データ
-INSERT INTO articles(user_id ,title,content,created_at,updated_at) VALUES ('1','タイトル(仮)','記事(仮)',current_timestamp,current_timestamp);
-INSERT INTO articles(user_id ,title,content,created_at,updated_at) VALUES ('2','タイトル(仮)2','記事(仮)2',current_timestamp,current_timestamp);
-INSERT INTO articles(user_id ,title,content,created_at,updated_at) VALUES ('3','ポケモンって何だっけ...','ピカァ...',current_timestamp,current_timestamp);
-INSERT INTO articles(user_id ,title,content,created_at,updated_at) VALUES ('4','人参嫌い','固すぎて食えたもんじゃないわ',current_timestamp,current_timestamp);
+INSERT INTO articles(id,user_id ,title,content,created_at,updated_at) VALUES ('awertasdfgzxcvb12345','1','タイトル(仮)','記事(仮)',current_timestamp,current_timestamp);
+INSERT INTO articles(id,user_id ,title,content,created_at,updated_at) VALUES ('qwertasdfgzxcvb12345','2','タイトル(仮)2','記事(仮)2',current_timestamp,current_timestamp);
+INSERT INTO articles(id,user_id ,title,content,created_at,updated_at) VALUES ('wwertasdfgzxcvb12345','3','ポケモンって何だっけ...','ピカァ...',current_timestamp,current_timestamp);
+INSERT INTO articles(id,user_id ,title,content,created_at,updated_at) VALUES ('iwertasdfgzxcvb12345','4','人参嫌い','固すぎて食えたもんじゃないわ',current_timestamp,current_timestamp);
 
 
 

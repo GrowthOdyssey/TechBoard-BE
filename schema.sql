@@ -24,7 +24,7 @@ create table logins (
 
 -- 記事
 create table articles (
-  id          serial primary key,
+  id          varchar(20) primary key,
   user_id     varchar(20) references users(user_id),
   title       varchar(100) not null,
   content varchar(2000) not null,

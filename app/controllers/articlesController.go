@@ -1,8 +1,12 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
+
+	"github.com/GrowthOdyssey/TechBoard-BE/app/models"
 )
 
 // ハンドラ関数
@@ -14,9 +18,10 @@ func articlesHandler(w http.ResponseWriter, r *http.Request) {
 	allowCors(w)
 	switch r.Method {
 	case http.MethodGet:
-		getArticles()
+		getArticles(w,r)
 	case http.MethodPost:
-		postArticle()
+		postArticle(w,r)
+
 	default:
 		// TODO aiharanaoya
 		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
@@ -29,11 +34,11 @@ func articlesIdHandler(w http.ResponseWriter, r *http.Request) {
 	allowCors(w)
 	switch r.Method {
 	case http.MethodGet:
-		getArticleById()
+		getArticleById(w,r)
 	case http.MethodPut:
-		putArticleById()
+		putArticleById(w,r)
 	case http.MethodDelete:
-		deleteArticleById()
+		deleteArticleById(w,r)
 	default:
 		// TODO aiharanaoya
 		// 仮で500のStatusTextを返している。今後エラーハンドリングを実装。
@@ -47,26 +52,73 @@ func articlesIdHandler(w http.ResponseWriter, r *http.Request) {
 // DBのアクセス関数、レシーバメソッド、複雑になるロジックはモデル関数に定義する。
 
 // 記事一覧取得
-func getArticles() {
-	fmt.Println("記事一覧取得処理")
+func getArticles(w http.ResponseWriter, r *http.Request){
+	userId := r.FormValue("userId")
+	page := r.FormValue("page")
+	perPage := r.FormValue("perPage")
+	articles := models.GetArticlesSql(userId, page, perPage)
+	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(articles)
 }
 
 // 記事作成
-func postArticle() {
-	fmt.Println("記事作成処理")
+func postArticle(w http.ResponseWriter, r *http.Request) {
+	accessToken := r.Header.Get("accessToken")
+	//リクエストボディを取る準備
+	var reqBody struct {
+		ArticleTitle  string `json:"articleTitle"`
+		Content  string `json:"content"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&reqBody)
+	if err != nil {
+		fmt.Println(err)
+	}
+//MODELに渡すための記述↓
+	articles := models.PostArticleSql(accessToken,reqBody.ArticleTitle,reqBody.Content)
+//MODELに渡すための記述↑
+
+	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(articles)
 }
 
 // 記事取得
-func getArticleById() {
-	fmt.Println("記事取得処理")
+func getArticleById(w http.ResponseWriter, r *http.Request) {
+	articleId := strings.TrimPrefix(r.URL.Path, "/v1/articles/")
+	articles := models.GetArticleByIdSql(articleId)
+	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(articles)
 }
 
 // 記事更新
-func putArticleById() {
-	fmt.Println("記事更新処理")
+func putArticleById(w http.ResponseWriter, r *http.Request) {
+	accessToken := r.Header.Get("accessToken")
+		//リクエストボディを取る準備
+		var reqBody struct {
+			ArticleId  string `json:"articleId"`
+			ArticleTitle  string `json:"articleTitle"`
+			Content  string `json:"content"`
+		}
+		err := json.NewDecoder(r.Body).Decode(&reqBody)
+		if err != nil {
+			fmt.Println(err)
+		}
+	//MODELに渡すための記述↓
+	articles := models.PutArticleSql(accessToken,reqBody.ArticleId,reqBody.ArticleTitle,reqBody.Content)
+	//MODELに渡すための記述↑
+
+	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(articles)
 }
 
 // 記事削除
-func deleteArticleById() {
-	fmt.Println("記事削除処理")
+func deleteArticleById(w http.ResponseWriter, r *http.Request) {
+	accessToken := r.Header.Get("accessToken")
+	articleId := strings.TrimPrefix(r.URL.Path, "/v1/articles/")
+	models.DeleteArticleSql(accessToken,articleId)
+	w.WriteHeader(204)
+	w.Header().Set("Content-Type", "application/json")
 }
