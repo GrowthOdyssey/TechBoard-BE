@@ -17,6 +17,8 @@ import (
 func articlesHandler(w http.ResponseWriter, r *http.Request) {
 	allowCors(w)
 	switch r.Method {
+	case http.MethodOptions:
+		w.WriteHeader(http.StatusOK)
 	case http.MethodGet:
 		getArticles(w,r)
 	case http.MethodPost:
@@ -33,6 +35,8 @@ func articlesHandler(w http.ResponseWriter, r *http.Request) {
 func articlesIdHandler(w http.ResponseWriter, r *http.Request) {
 	allowCors(w)
 	switch r.Method {
+	case http.MethodOptions:
+		w.WriteHeader(http.StatusOK)
 	case http.MethodGet:
 		getArticleById(w,r)
 	case http.MethodPut:
